@@ -21,11 +21,22 @@ fi
 # Создаем папку с проектом, если она не существует, и клонируем репозиторий
 if [ ! -d "$PROJECT_DIR" ]; then
     echo "Клонирование репозитория $REPO_URL в папку $PROJECT_DIR..." | tee -a "$LOG_FILE"
-    (git clone "$REPO_URL" "$PROJECT_DIR" && chmod +x "$PROJECT_DIR/start.sh") || { echo "Ошибка клонирования репозитория." | tee -a "$LOG_FILE"; exit 1; }
+    git clone "$REPO_URL" "$PROJECT_DIR" || { echo "Ошибка клонирования репозитория." | tee -a "$LOG_FILE"; exit 1; }
+    
+    # Делаем start.sh исполняемым
+    chmod +x "$PROJECT_DIR/start.sh" || { echo "Ошибка при установке прав на выполнение для start.sh." | tee -a "$LOG_FILE"; exit 1; }
 else
     echo "Проект уже существует, выполняется обновление..." | tee -a "$LOG_FILE"
-    (cd "$PROJECT_DIR" && && chmod +x "$PROJECT_DIR/start.sh") || { echo "Ошибка: не удается зайти в директорию проекта." | tee -a "$LOG_FILE"; exit 1; }
+    cd "$PROJECT_DIR" || { echo "Ошибка: не удается зайти в директорию проекта." | tee -a "$LOG_FILE"; exit 1; }
     git pull origin main || { echo "Ошибка при обновлении репозитория." | tee -a "$LOG_FILE"; exit 1; }
+
+    # Проверка наличия start.sh и установка прав, если он был удален или изменен
+    if [ -f "start.sh" ]; then
+        chmod +x "start.sh" || { echo "Ошибка при установке прав на выполнение для start.sh после обновления." | tee -a "$LOG_FILE"; exit 1; }
+    else
+        echo "Файл start.sh не найден после обновления." | tee -a "$LOG_FILE"
+        exit 1
+    fi
     cd ..
 fi
 
@@ -43,7 +54,7 @@ echo "Активация виртуального окружения..." | tee -
 source venv/bin/activate || { echo "Ошибка активации виртуального окружения." | tee -a "$LOG_FILE"; exit 1; }
 
 # Установка зависимостей
-if [ -f "requirements.txt" ]; then
+if [ -f "requirements.txt" ];then
     echo "Установка зависимостей..." | tee -a "$LOG_FILE"
     pip install --upgrade pip || { echo "Ошибка обновления pip." | tee -a "$LOG_FILE"; exit 1; }
     pip install -r requirements.txt || { echo "Ошибка установки зависимостей." | tee -a "$LOG_FILE"; exit 1; }
@@ -56,8 +67,6 @@ fi
 echo "Установка или обновление завершены успешно." | tee -a "$LOG_FILE"
 deactivate
 cd ..
-
-
 
 # Завершение работы скрипта
 echo "Скрипт завершил работу. Лог записан в $LOG_FILE."
