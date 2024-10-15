@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Определяем URL репозитория и название папки проекта
-REPO_URL="https://github.com/giteed/pyChainLite.git"
-PROJECT_DIR="pyChainLite"
+# Определяем абсолютный путь к текущей директории и к папкам проекта и логов
+BASE_DIR=$(pwd)
+PROJECT_DIR="$BASE_DIR/pyChainLite"
 LOG_DIR="$PROJECT_DIR/logs"
 LOG_FILE="$LOG_DIR/install-update.log"
 
@@ -12,14 +12,17 @@ if [ ! -d "$PROJECT_DIR" ]; then
     exit 1
 fi
 
-# Проверяем существование папки для логов и файла логов
+# Создаем папку для логов внутри проекта, если она не существует
 if [ ! -d "$LOG_DIR" ]; then
     echo "Создание директории для логов..."
     mkdir -p "$LOG_DIR" || { echo "Ошибка создания директории для логов."; exit 1; }
 fi
 
-# Создаем или проверяем файл лога
-touch "$LOG_FILE" || { echo "Ошибка создания файла лога."; exit 1; }
+# Создаем файл лога, если он не существует
+if [ ! -f "$LOG_FILE" ]; then
+    echo "Создание файла лога..."
+    touch "$LOG_FILE" || { echo "Ошибка создания файла лога."; exit 1; }
+fi
 
 # Записываем в лог информацию о начале работы скрипта
 echo "Запуск установки/обновления" | tee -a "$LOG_FILE"
@@ -38,8 +41,8 @@ fi
 
 # Проверка, был ли проект уже клонирован
 if [ ! -d "$PROJECT_DIR/.git" ]; then
-    echo "Клонирование репозитория $REPO_URL в папку $PROJECT_DIR..." | tee -a "$LOG_FILE"
-    git clone "$REPO_URL" "$PROJECT_DIR" || { echo "Ошибка клонирования репозитория." | tee -a "$LOG_FILE"; exit 1; }
+    echo "Клонирование репозитория в папку $PROJECT_DIR..." | tee -a "$LOG_FILE"
+    git clone https://github.com/giteed/pyChainLite.git "$PROJECT_DIR" || { echo "Ошибка клонирования репозитория." | tee -a "$LOG_FILE"; exit 1; }
     
     # Делаем start.sh исполняемым
     chmod +x "$PROJECT_DIR/start.sh" || { echo "Ошибка при установке прав на выполнение для start.sh." | tee -a "$LOG_FILE"; exit 1; }
@@ -59,7 +62,7 @@ else
 
     # Устанавливаем права на выполнение для start.sh
     chmod +x "start.sh" || { echo "Ошибка при установке прав на выполнение для start.sh после обновления." | tee -a "$LOG_FILE"; exit 1; }
-    cd ..
+    cd "$BASE_DIR"
 fi
 
 # Перемещаемся в директорию проекта для установки зависимостей
@@ -88,7 +91,7 @@ fi
 # Проверка успешности установки
 echo "Установка или обновление завершены успешно." | tee -a "$LOG_FILE"
 deactivate
-cd ..
+cd "$BASE_DIR"
 
 # Завершение работы скрипта
 echo "Скрипт завершил работу. Лог записан в $LOG_FILE."
