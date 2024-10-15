@@ -6,8 +6,15 @@ PROJECT_DIR="pyChainLite"
 LOG_DIR="$PROJECT_DIR/logs"
 LOG_FILE="$LOG_DIR/install-update.log"
 
-# Создаем папку для логов, если она не существует, перед первой записью в лог
+# Создаем папку проекта, если она не существует
+if [ ! -d "$PROJECT_DIR" ]; then
+    echo "Создание директории проекта $PROJECT_DIR..."
+    mkdir -p "$PROJECT_DIR" || { echo "Ошибка создания директории проекта."; exit 1; }
+fi
+
+# Создаем папку для логов внутри проекта, если она не существует
 if [ ! -d "$LOG_DIR" ]; then
+    echo "Создание директории для логов..."
     mkdir -p "$LOG_DIR" || { echo "Ошибка создания директории для логов."; exit 1; }
 fi
 
@@ -23,8 +30,8 @@ if ! command -v git &> /dev/null; then
     exit
 fi
 
-# Создаем папку с проектом и клонируем репозиторий, если она не существует
-if [ ! -d "$PROJECT_DIR" ]; then
+# Клонирование репозитория, если проект не был установлен ранее
+if [ ! -d "$PROJECT_DIR/.git" ]; then
     echo "Клонирование репозитория $REPO_URL в папку $PROJECT_DIR..." | tee -a "$LOG_FILE"
     git clone "$REPO_URL" "$PROJECT_DIR" || { echo "Ошибка клонирования репозитория." | tee -a "$LOG_FILE"; exit 1; }
     
@@ -39,7 +46,7 @@ else
     git pull origin main || { echo "Ошибка при обновлении репозитория." | tee -a "$LOG_FILE"; exit 1; }
 
     # Восстанавливаем start.sh, если он был удален
-    if [ ! -f "start.sh" ];then
+    if [ ! -f "start.sh" ]; then
         echo "Файл start.sh был удалён локально, восстанавливаю его из репозитория..." | tee -a "$LOG_FILE"
         git checkout origin/main -- start.sh || { echo "Ошибка при восстановлении start.sh." | tee -a "$LOG_FILE"; exit 1; }
     fi
