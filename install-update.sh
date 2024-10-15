@@ -6,31 +6,37 @@ PROJECT_DIR="pyChainLite"
 LOG_DIR="$PROJECT_DIR/logs"
 LOG_FILE="$LOG_DIR/install-update.log"
 
-# Создаем папку проекта, если она не существует
+# Проверяем существование папки проекта
 if [ ! -d "$PROJECT_DIR" ]; then
-    echo "Создание директории проекта $PROJECT_DIR..."
-    mkdir -p "$PROJECT_DIR" || { echo "Ошибка создания директории проекта."; exit 1; }
+    echo "Ошибка: папка проекта $PROJECT_DIR не существует. Выполните установку проекта сначала."
+    exit 1
 fi
 
-# Создаем папку для логов внутри проекта, если она не существует
+# Проверяем существование папки для логов и файла логов
 if [ ! -d "$LOG_DIR" ]; then
     echo "Создание директории для логов..."
     mkdir -p "$LOG_DIR" || { echo "Ошибка создания директории для логов."; exit 1; }
 fi
 
+# Создаем или проверяем файл лога
+touch "$LOG_FILE" || { echo "Ошибка создания файла лога."; exit 1; }
+
+# Записываем в лог информацию о начале работы скрипта
+echo "Запуск установки/обновления" | tee -a "$LOG_FILE"
+
 # Проверяем наличие Python
 if ! command -v python3 &> /dev/null; then
     echo "Python3 не установлен. Установите Python версии 3.12.x." | tee -a "$LOG_FILE"
-    exit
+    exit 1
 fi
 
 # Проверяем наличие Git
 if ! command -v git &> /dev/null; then
     echo "Git не установлен. Установите Git для продолжения." | tee -a "$LOG_FILE"
-    exit
+    exit 1
 fi
 
-# Клонирование репозитория, если проект не был установлен ранее
+# Проверка, был ли проект уже клонирован
 if [ ! -d "$PROJECT_DIR/.git" ]; then
     echo "Клонирование репозитория $REPO_URL в папку $PROJECT_DIR..." | tee -a "$LOG_FILE"
     git clone "$REPO_URL" "$PROJECT_DIR" || { echo "Ошибка клонирования репозитория." | tee -a "$LOG_FILE"; exit 1; }
