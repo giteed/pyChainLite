@@ -21,7 +21,7 @@ fi
 # Создаем папку с проектом, если она не существует, и клонируем репозиторий
 if [ ! -d "$PROJECT_DIR" ]; then
     echo "Клонирование репозитория $REPO_URL в папку $PROJECT_DIR..." | tee -a "$LOG_FILE"
-    git clone "$REPO_URL" "$PROJECT_DIR" || { echo "Ошибка клонирования репозитория." | tee -a "$LOG_FILE"; exit 1; }
+    (git clone "$REPO_URL" "$PROJECT_DIR" && chmod +x "$PROJECT_DIR/start.sh") || { echo "Ошибка клонирования репозитория." | tee -a "$LOG_FILE"; exit 1; }
 else
     echo "Проект уже существует, выполняется обновление..." | tee -a "$LOG_FILE"
     cd "$PROJECT_DIR" || { echo "Ошибка: не удается зайти в директорию проекта." | tee -a "$LOG_FILE"; exit 1; }
@@ -56,6 +56,8 @@ fi
 echo "Установка или обновление завершены успешно." | tee -a "$LOG_FILE"
 deactivate
 cd ..
+
+
 
 # Завершение работы скрипта
 echo "Скрипт завершил работу. Лог записан в $LOG_FILE."
