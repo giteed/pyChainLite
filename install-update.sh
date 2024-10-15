@@ -24,7 +24,7 @@ if [ ! -d "$PROJECT_DIR" ]; then
     (git clone "$REPO_URL" "$PROJECT_DIR" && chmod +x "$PROJECT_DIR/start.sh") || { echo "Ошибка клонирования репозитория." | tee -a "$LOG_FILE"; exit 1; }
 else
     echo "Проект уже существует, выполняется обновление..." | tee -a "$LOG_FILE"
-    cd "$PROJECT_DIR" || { echo "Ошибка: не удается зайти в директорию проекта." | tee -a "$LOG_FILE"; exit 1; }
+    (cd "$PROJECT_DIR" && && chmod +x "$PROJECT_DIR/start.sh") || { echo "Ошибка: не удается зайти в директорию проекта." | tee -a "$LOG_FILE"; exit 1; }
     git pull origin main || { echo "Ошибка при обновлении репозитория." | tee -a "$LOG_FILE"; exit 1; }
     cd ..
 fi
