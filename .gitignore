@@ -1,0 +1,6 @@
+env/
+__pycache__/
+test_blockchain.py
+TEMP/
+blockchain_tar_gz/
+logs/
