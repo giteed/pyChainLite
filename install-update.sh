@@ -3,7 +3,7 @@
 # Определяем URL репозитория и название папки проекта
 REPO_URL="https://github.com/giteed/pyChainLite.git"
 PROJECT_DIR="pyChainLite"
-LOG_DIR="logs"
+LOG_DIR="$PROJECT_DIR/logs"
 LOG_FILE="$LOG_DIR/install-update.log"
 
 # Проверяем наличие Python
@@ -28,9 +28,12 @@ if [ ! -d "$PROJECT_DIR" ]; then
 else
     echo "Проект уже существует, выполняется обновление..." | tee -a "$LOG_FILE"
     cd "$PROJECT_DIR" || { echo "Ошибка: не удается зайти в директорию проекта." | tee -a "$LOG_FILE"; exit 1; }
+
+    # Принудительно сбрасываем изменения и обновляем проект
+    git reset --hard HEAD || { echo "Ошибка при сбросе изменений." | tee -a "$LOG_FILE"; exit 1; }
     git pull origin main || { echo "Ошибка при обновлении репозитория." | tee -a "$LOG_FILE"; exit 1; }
 
-    # Проверка наличия start.sh и установка прав, если он был удален или изменен
+    # Проверка наличия start.sh и установка прав
     if [ -f "start.sh" ]; then
         chmod +x "start.sh" || { echo "Ошибка при установке прав на выполнение для start.sh после обновления." | tee -a "$LOG_FILE"; exit 1; }
     else
@@ -54,7 +57,7 @@ echo "Активация виртуального окружения..." | tee -
 source venv/bin/activate || { echo "Ошибка активации виртуального окружения." | tee -a "$LOG_FILE"; exit 1; }
 
 # Установка зависимостей
-if [ -f "requirements.txt" ];then
+if [ -f "requirements.txt" ]; then
     echo "Установка зависимостей..." | tee -a "$LOG_FILE"
     pip install --upgrade pip || { echo "Ошибка обновления pip." | tee -a "$LOG_FILE"; exit 1; }
     pip install -r requirements.txt || { echo "Ошибка установки зависимостей." | tee -a "$LOG_FILE"; exit 1; }
