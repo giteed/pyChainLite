@@ -61,39 +61,9 @@ echo "Создание структуры проекта..."
 mkdir -p src logs tests
 touch logs/.gitkeep tests/.gitkeep src/.gitkeep
 
-# Добавление .gitignore для виртуального окружения и логов
-cat > .gitignore <<EOL
-venv/
-logs/
-__pycache__/
-*.pyc
-EOL
-
-# Простое меню-интерфейс
-echo "Меню pyChainLite"
-echo "1. Запустить блокчейн"
-echo "2. Авторизация пользователя"
-echo "3. Просмотреть логи"
-echo "Выберите действие (1-3): "
-read action
-
-case $action in
-    1)
-        echo "Запуск блокчейна..."
-        # Заглушка для дальнейшей разработки
-        ;;
-    2)
-        echo "Авторизация пользователя..."
-        # Заглушка для авторизации
-        ;;
-    3)
-        echo "Просмотр логов..."
-        # Заглушка для логов
-        ;;
-    *)
-        echo "Неверный выбор!"
-        ;;
-esac
+# Запуск меню
+echo "Запуск меню pyChainLite..."
+python3 menu.py
 
 # Выход из виртуального окружения
 deactivate
