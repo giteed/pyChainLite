@@ -6,6 +6,11 @@ PROJECT_DIR="pyChainLite"
 LOG_DIR="$PROJECT_DIR/logs"
 LOG_FILE="$LOG_DIR/install-update.log"
 
+# Создаем папку для логов, если она не существует, перед первой записью в лог
+if [ ! -d "$LOG_DIR" ]; then
+    mkdir -p "$LOG_DIR" || { echo "Ошибка создания директории для логов."; exit 1; }
+fi
+
 # Проверяем наличие Python
 if ! command -v python3 &> /dev/null; then
     echo "Python3 не установлен. Установите Python версии 3.12.x." | tee -a "$LOG_FILE"
@@ -18,7 +23,7 @@ if ! command -v git &> /dev/null; then
     exit
 fi
 
-# Создаем папку проекта и клонируем репозиторий, если она не существует
+# Создаем папку с проектом и клонируем репозиторий, если она не существует
 if [ ! -d "$PROJECT_DIR" ]; then
     echo "Клонирование репозитория $REPO_URL в папку $PROJECT_DIR..." | tee -a "$LOG_FILE"
     git clone "$REPO_URL" "$PROJECT_DIR" || { echo "Ошибка клонирования репозитория." | tee -a "$LOG_FILE"; exit 1; }
@@ -42,11 +47,6 @@ else
     # Устанавливаем права на выполнение для start.sh
     chmod +x "start.sh" || { echo "Ошибка при установке прав на выполнение для start.sh после обновления." | tee -a "$LOG_FILE"; exit 1; }
     cd ..
-fi
-
-# Создаем папку для логов, если она не существует
-if [ ! -d "$LOG_DIR" ]; then
-    mkdir -p "$LOG_DIR" || { echo "Ошибка создания директории для логов." | exit 1; }
 fi
 
 # Перемещаемся в директорию проекта для установки зависимостей
