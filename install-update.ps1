@@ -1,4 +1,3 @@
-
 # Определяем директории проекта и логов
 $BASE_DIR = Get-Location
 $PROJECT_DIR = Join-Path $BASE_DIR "pyChainLite"
@@ -87,35 +86,15 @@ if (Test-Path "$PROJECT_DIR/.git") {
         Exit 1
     }
 } else {
-    if (-not (Test-Path $PROJECT_DIR/.git)) {
-        Write-Host "[Ошибка] Папка существует, но не является репозиторием."
-        $answer = Read-Host "Удалить существующую папку $PROJECT_DIR и продолжить установку? (y/n)"
-        if ($answer -eq "y") {
-            Remove-Item -Recurse -Force $PROJECT_DIR
-            Write-Host "Папка удалена. Повторный запуск установки..."
-            & git clone https://github.com/giteed/pyChainLite.git $PROJECT_DIR
-            if ($LASTEXITCODE -ne 0) {
-                Log "Ошибка клонирования репозитория."
-                Write-Host "[Ошибка] Не удалось клонировать репозиторий."
-                Exit 1
-            }
-            Log "Клонирование завершено."
-            Write-Host "Клонирование завершено."
-        } else {
-            Write-Host "Установка отменена пользователем."
-            Exit 1
-        }
-    } else {
-        Log "Клонирование репозитория в папку $PROJECT_DIR..."
-        & git clone https://github.com/giteed/pyChainLite.git $PROJECT_DIR
-        if ($LASTEXITCODE -ne 0) {
-            Log "Ошибка клонирования репозитория."
-            Write-Host "[Ошибка] Не удалось клонировать репозиторий."
-            Exit 1
-        }
-        Log "Клонирование завершено."
-        Write-Host "Клонирование завершено."
+    Log "Клонирование репозитория в папку $PROJECT_DIR..."
+    & git clone https://github.com/giteed/pyChainLite.git $PROJECT_DIR
+    if ($LASTEXITCODE -ne 0) {
+        Log "Ошибка клонирования репозитория."
+        Write-Host "[Ошибка] Не удалось клонировать репозиторий."
+        Exit 1
     }
+    Log "Клонирование завершено."
+    Write-Host "Клонирование завершено."
 }
 
 # Остальные шаги для активации виртуального окружения и установки зависимостей
