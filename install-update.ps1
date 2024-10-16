@@ -7,6 +7,9 @@ $LOG_FILE = Join-Path $LOG_DIR "install-update.log"
 # Функция для записи в лог с датой и временем
 function Log {
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    if (-not (Test-Path $LOG_DIR)) {
+        New-Item -ItemType Directory -Path $LOG_DIR | Out-Null
+    }
     "$timestamp $args" | Out-File -Append -FilePath $LOG_FILE
 }
 
@@ -97,6 +100,11 @@ if (Test-Path "$PROJECT_DIR/.git") {
     }
     Log "Клонирование завершено."
     Write-Host "Клонирование завершено."
+
+    # После клонирования создаем папку для логов заново
+    if (-not (Test-Path $LOG_DIR)) {
+        New-Item -ItemType Directory -Path $LOG_DIR | Out-Null
+    }
 }
 
 # Остальные шаги для активации виртуального окружения и установки зависимостей
