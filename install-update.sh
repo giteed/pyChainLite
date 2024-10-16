@@ -47,6 +47,11 @@ fi
 
 log "Git установлен: $(git --version)"
 
+# Запуск скрипта для создания папок src и tests
+echo "Проверка и создание необходимых директорий..."
+chmod +x create_dirs.sh
+./create_dirs.sh
+
 # Проверка, был ли проект уже клонирован
 if [ ! -d "$PROJECT_DIR/.git" ]; then
     log "Клонирование репозитория в папку $PROJECT_DIR..."
