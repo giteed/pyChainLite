@@ -85,7 +85,9 @@ if (Test-Path "$PROJECT_DIR/.git") {
         Write-Host "[Ошибка] Не удалось обновить репозиторий."
         Exit 1
     }
-} else {
+} elseif (-not (Test-Path "$PROJECT_DIR/.git")) {
+    Write-Host "Папка не является репозиторием. Удаление и повторное клонирование..."
+    Remove-Item -Recurse -Force $PROJECT_DIR
     Log "Клонирование репозитория в папку $PROJECT_DIR..."
     & git clone https://github.com/giteed/pyChainLite.git $PROJECT_DIR
     if ($LASTEXITCODE -ne 0) {
