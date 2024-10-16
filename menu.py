@@ -1,48 +1,60 @@
-from rich.console import Console
-from rich.table import Table
-from rich.prompt import Prompt
-
-# Инициализация объекта для вывода в консоль
-console = Console()
+import os
+import subprocess
 
 def display_menu():
-    """Функция для отображения главного меню pyChainLite"""
-    console.clear()
+    print("Меню pyChainLite")
+    print("1. Запустить блокчейн")
+    print("2. Авторизация пользователя")
+    print("3. Просмотреть логи")
+    print("4. Запустить тесты")
+    print("5. Выйти")
 
-    # Создаем таблицу для красивого отображения меню
-    table = Table(title="pyChainLite - Главное меню")
+def run_blockchain():
+    print("Запуск блокчейна...")
+    # Здесь будет код для запуска блокчейна
+    # Например, subprocess.call(['python', 'blockchain.py'])
 
-    table.add_column("Номер", justify="center", style="cyan", no_wrap=True)
-    table.add_column("Операция", justify="left", style="magenta")
+def user_authorization():
+    print("Авторизация пользователя...")
+    # Здесь будет код для авторизации пользователя
+    # Например, subprocess.call(['python', 'auth.py'])
 
-    # Добавляем пункты меню
-    table.add_row("1", "Запустить блокчейн")
-    table.add_row("2", "Авторизация пользователя")
-    table.add_row("3", "Просмотреть логи")
-    table.add_row("4", "Выход")
+def view_logs():
+    print("Открытие логов...")
+    # Открытие логов (например, через командную строку или редактор)
+    log_file = os.path.join("logs", "install-update.log")
+    if os.path.exists(log_file):
+        with open(log_file, 'r') as f:
+            print(f.read())
+    else:
+        print("Логи не найдены.")
 
-    console.print(table)
+def run_tests():
+    print("Запуск тестов...")
+    # Запуск тестов через pytest
+    try:
+        subprocess.run(['pytest'], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Ошибка при запуске тестов: {e}")
 
-def handle_menu_choice():
-    """Функция для обработки выбора пользователя"""
+def main():
     while True:
         display_menu()
-        choice = Prompt.ask("[bold yellow]Выберите действие (1-4)")
-
-        if choice == "1":
-            console.print("[bold green]Запуск блокчейна...[/bold green]")
-            # Здесь будет код запуска блокчейна
-        elif choice == "2":
-            console.print("[bold green]Авторизация пользователя...[/bold green]")
-            # Здесь будет код авторизации
-        elif choice == "3":
-            console.print("[bold green]Просмотр логов...[/bold green]")
-            # Здесь будет код просмотра логов
-        elif choice == "4":
-            console.print("[bold red]Выход из программы...[/bold red]")
+        choice = input("Выберите действие (1-5): ")
+        
+        if choice == '1':
+            run_blockchain()
+        elif choice == '2':
+            user_authorization()
+        elif choice == '3':
+            view_logs()
+        elif choice == '4':
+            run_tests()
+        elif choice == '5':
+            print("Выход...")
             break
         else:
-            console.print("[bold red]Неверный выбор, попробуйте снова.[/bold red]")
+            print("Неверный выбор. Пожалуйста, выберите действие от 1 до 5.")
 
 if __name__ == "__main__":
-    handle_menu_choice()
+    main()
