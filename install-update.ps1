@@ -90,7 +90,11 @@ if (Test-Path "$PROJECT_DIR/.git") {
     }
 } elseif (-not (Test-Path "$PROJECT_DIR/.git")) {
     Write-Host "Папка не является репозиторием. Удаление и повторное клонирование..."
+    
+    # Полное удаление папки перед клонированием
     Remove-Item -Recurse -Force $PROJECT_DIR
+    Start-Sleep -s 2  # Небольшая пауза для завершения удаления
+    
     Log "Клонирование репозитория в папку $PROJECT_DIR..."
     & git clone https://github.com/giteed/pyChainLite.git $PROJECT_DIR
     if ($LASTEXITCODE -ne 0) {
