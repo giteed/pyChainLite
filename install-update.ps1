@@ -65,17 +65,7 @@ Log "Git установлен: $gitVersion"
 Write-Host "Git установлен: $gitVersion"
 
 # Проверка, был ли проект уже клонирован
-if (-not (Test-Path "$PROJECT_DIR/.git")) {
-    Log "Клонирование репозитория в папку $PROJECT_DIR..."
-    & git clone https://github.com/giteed/pyChainLite.git $PROJECT_DIR
-    if ($LASTEXITCODE -ne 0) {
-        Log "Ошибка клонирования репозитория."
-        Write-Host "[Ошибка] Не удалось клонировать репозиторий."
-        Exit 1
-    }
-    Log "Клонирование завершено."
-    Write-Host "Клонирование завершено."
-} else {
+if (Test-Path "$PROJECT_DIR/.git") {
     Log "Проект уже существует, выполняется обновление..."
     Write-Host "Проект уже существует, выполняется обновление..."
     Set-Location $PROJECT_DIR
@@ -95,6 +85,21 @@ if (-not (Test-Path "$PROJECT_DIR/.git")) {
         Write-Host "[Ошибка] Не удалось обновить репозиторий."
         Exit 1
     }
+} else {
+    if (-not (Test-Path $PROJECT_DIR/.git)) {
+        Log "Ошибка: Папка существует, но не является репозиторием. Удалите её или исправьте."
+        Write-Host "[Ошибка] Папка существует, но не является репозиторием. Удалите её или исправьте."
+        Exit 1
+    }
+    Log "Клонирование репозитория в папку $PROJECT_DIR..."
+    & git clone https://github.com/giteed/pyChainLite.git $PROJECT_DIR
+    if ($LASTEXITCODE -ne 0) {
+        Log "Ошибка клонирования репозитория."
+        Write-Host "[Ошибка] Не удалось клонировать репозиторий."
+        Exit 1
+    }
+    Log "Клонирование завершено."
+    Write-Host "Клонирование завершено."
 }
 
 # Остальные шаги для активации виртуального окружения и установки зависимостей
