@@ -1,41 +1,50 @@
 import os
 import subprocess
+from rich.console import Console
+from rich.table import Table
+
+console = Console()
 
 def display_menu():
-    print("Меню pyChainLite")
-    print("1. Запустить блокчейн")
-    print("2. Авторизация пользователя")
-    print("3. Просмотреть логи")
-    print("4. Запустить тесты")
-    print("5. Выйти")
+    table = Table(title="Меню pyChainLite", show_header=True, header_style="bold cyan")
+    table.add_column("Номер", style="dim")
+    table.add_column("Действие", style="bold")
+    
+    table.add_row("1", "Запустить блокчейн")
+    table.add_row("2", "Авторизация пользователя")
+    table.add_row("3", "Просмотреть логи")
+    table.add_row("4", "Запустить тесты")
+    table.add_row("5", "Выйти")
+
+    console.print(table)
 
 def run_blockchain():
-    print("Запуск блокчейна...")
+    console.print("🚀 [bold green]Запуск блокчейна...[/bold green]")
     # Здесь будет код для запуска блокчейна
     # Например, subprocess.call(['python', 'blockchain.py'])
 
 def user_authorization():
-    print("Авторизация пользователя...")
+    console.print("🔑 [bold yellow]Авторизация пользователя...[/bold yellow]")
     # Здесь будет код для авторизации пользователя
     # Например, subprocess.call(['python', 'auth.py'])
 
 def view_logs():
-    print("Открытие логов...")
-    # Открытие логов (например, через командную строку или редактор)
+    console.print("📄 [bold blue]Открытие логов...[/bold blue]")
+    # Открытие логов
     log_file = os.path.join("logs", "install-update.log")
     if os.path.exists(log_file):
         with open(log_file, 'r') as f:
-            print(f.read())
+            console.print(f.read())
     else:
-        print("Логи не найдены.")
+        console.print("[bold red]Логи не найдены.[/bold red]")
 
 def run_tests():
-    print("Запуск тестов...")
+    console.print("🧪 [bold magenta]Запуск тестов...[/bold magenta]")
     # Запуск тестов через pytest
     try:
         subprocess.run(['pytest'], check=True)
     except subprocess.CalledProcessError as e:
-        print(f"Ошибка при запуске тестов: {e}")
+        console.print(f"[bold red]Ошибка при запуске тестов: {e}[/bold red]")
 
 def main():
     while True:
@@ -51,10 +60,10 @@ def main():
         elif choice == '4':
             run_tests()
         elif choice == '5':
-            print("Выход...")
+            console.print("[bold green]Выход...[/bold green]")
             break
         else:
-            print("Неверный выбор. Пожалуйста, выберите действие от 1 до 5.")
+            console.print("[bold red]Неверный выбор. Пожалуйста, выберите действие от 1 до 5.[/bold red]")
 
 if __name__ == "__main__":
     main()
