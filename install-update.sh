@@ -109,6 +109,29 @@ fi
 
 log "Установка или обновление завершены успешно."
 
+# Создание скрипта update-and-start.sh для обновления и запуска одной командой
+log "Создание скрипта update-and-start.sh..."
+cat << 'EOF' > "$BASE_DIR/update-and-start.sh"
+#!/bin/bash
+
+# Переходим в родительскую директорию
+cd ..
+
+# Запускаем обновление
+./install-update.sh
+
+# Возвращаемся в папку проекта
+cd pyChainLite/
+
+# Запускаем скрипт start.sh
+./start.sh
+EOF
+
+# Делаем скрипт исполняемым
+chmod +x "$BASE_DIR/update-and-start.sh" || { log "Ошибка при установке прав на выполнение для update-and-start.sh."; exit 1; }
+
+log "Скрипт update-and-start.sh создан и готов к использованию."
+
 # Завершение работы виртуального окружения
 deactivate
 cd "$BASE_DIR"
