@@ -36,10 +36,11 @@ def view_logs():
 
 def run_tests():
     console.print("🧪 [bold magenta]Запуск тестов...[/bold magenta]")
-    # Добавление пути к папке src в PYTHONPATH
-    sys.path.append(os.path.join(os.getcwd(), "src"))
+    # Устанавливаем PYTHONPATH для тестов
+    env = os.environ.copy()
+    env['PYTHONPATH'] = os.path.join(os.getcwd(), "src")
     try:
-        subprocess.run(['pytest'], check=True)
+        subprocess.run(['pytest'], check=True, env=env)
     except subprocess.CalledProcessError as e:
         console.print(f"[bold red]Ошибка при запуске тестов: {e}[/bold red]")
 
