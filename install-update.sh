@@ -6,11 +6,6 @@ PROJECT_DIR="$BASE_DIR/pyChainLite"
 LOG_DIR="$PROJECT_DIR/logs"
 LOG_FILE="$LOG_DIR/install-update.log"
 
-# Функция для записи в лог с датой и временем
-log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
-}
-
 # Проверяем существование папки проекта и создаем её при необходимости
 if [ ! -d "$PROJECT_DIR" ]; then
     echo "Папка проекта не найдена. Создаю папку $PROJECT_DIR..."
@@ -33,6 +28,11 @@ if [ ! -f "$LOG_FILE" ]; then
     echo "Создание файла лога..."
     touch "$LOG_FILE" || { echo "Ошибка создания файла лога."; exit 1; }
 fi
+
+# Функция для записи в лог с датой и временем
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
+}
 
 log "Запуск установки/обновления"
 
