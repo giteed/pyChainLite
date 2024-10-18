@@ -11,10 +11,15 @@ log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
 }
 
-# Проверяем существование папки проекта
+# Проверяем существование папки проекта и создаем её при необходимости
 if [ ! -d "$PROJECT_DIR" ]; then
-    log "Ошибка: папка проекта $PROJECT_DIR не существует. Выполните установку проекта сначала."
-    exit 1
+    log "Папка проекта не найдена. Создаю папку $PROJECT_DIR..."
+    mkdir -p "$PROJECT_DIR" || { log "Ошибка: не удалось создать папку проекта."; exit 1; }
+
+    log "Клонирование репозитория в папку $PROJECT_DIR..."
+    git clone https://github.com/giteed/pyChainLite.git "$PROJECT_DIR" || { log "Ошибка клонирования репозитория."; exit 1; }
+    
+    log "Клонирование завершено успешно."
 fi
 
 # Создаем папку для логов внутри проекта, если она не существует
@@ -52,15 +57,8 @@ echo "Проверка и создание необходимых директо
 chmod +x create_dirs.sh
 ./create_dirs.sh
 
-# Проверка, был ли проект уже клонирован
-if [ ! -d "$PROJECT_DIR/.git" ]; then
-    log "Клонирование репозитория в папку $PROJECT_DIR..."
-    git clone https://github.com/giteed/pyChainLite.git "$PROJECT_DIR" || { log "Ошибка клонирования репозитория."; exit 1; }
-    
-    # Делаем start.sh исполняемым
-    log "Установка прав на выполнение для start.sh..."
-    chmod +x "$PROJECT_DIR/start.sh" || { log "Ошибка при установке прав на выполнение для start.sh."; exit 1; }
-else
+# Если проект уже существует, выполняем обновление
+if [ -d "$PROJECT_DIR/.git" ]; then
     log "Проект уже существует, выполняется обновление..."
     cd "$PROJECT_DIR" || { log "Ошибка: не удается зайти в директорию проекта."; exit 1; }
 
@@ -71,14 +69,8 @@ else
     log "Обновление репозитория..."
     git pull origin main || { log "Ошибка при обновлении репозитория."; exit 1; }
 
-    # Восстанавливаем start.sh, если он был удален
-    if [ ! -f "start.sh" ]; then
-        log "Файл start.sh был удалён локально, восстанавливаю его из репозитория..."
-        git checkout origin/main -- start.sh || { log "Ошибка при восстановлении start.sh."; exit 1; }
-    fi
-
     log "Установка прав на выполнение для start.sh..."
-    chmod +x "start.sh" || { log "Ошибка при установке прав на выполнение для start.sh после обновления."; exit 1; }
+    chmod +x "start.sh" || { log "Ошибка при установке прав на выполнение для start.sh."; exit 1; }
     cd "$BASE_DIR"
 fi
 
