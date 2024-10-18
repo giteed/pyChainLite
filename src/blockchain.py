@@ -3,17 +3,24 @@ import hashlib
 import time
 
 class Block:
-    def __init__(self, index, previous_hash, data, user_signature):
-        self.index = index
-        self.timestamp = time.time()
-        self.data = data
-        self.previous_hash = previous_hash
-        self.user_signature = user_signature
-        self.hash = self.calculate_hash()
+    def __init__(self, index, data, previous_hash):
+        self.index = index                        # Номер блока в цепочке
+        self.timestamp = time.time()              # Временная метка создания блока
+        self.data = data                          # Данные, хранимые в блоке
+        self.previous_hash = previous_hash        # Хеш предыдущего блока
+        self.hash = self.calculate_hash()         # Хеш текущего блока
 
     def calculate_hash(self):
-        block_content = f"{self.index}{self.timestamp}{self.previous_hash}{self.data}{self.user_signature}"
-        return hashlib.sha256(block_content.encode()).hexdigest()
+        """
+        Вычисляет хеш для текущего блока.
+        Хеш создается на основе данных блока, индекса, временной метки и хеша предыдущего блока.
+        """
+        block_data = f"{self.index}{self.timestamp}{self.data}{self.previous_hash}"
+        return hashlib.sha256(block_data.encode()).hexdigest()
 
     def __repr__(self):
-        return f"Block(index={self.index}, hash={self.hash})"
+        """
+        Возвращает строковое представление блока для удобства отображения.
+        """
+        return (f"Block(index: {self.index}, timestamp: {self.timestamp}, "
+                f"data: {self.data}, previous_hash: {self.previous_hash}, hash: {self.hash})")
