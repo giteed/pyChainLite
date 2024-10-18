@@ -24,7 +24,7 @@ if [ ! -d "$LOG_DIR" ]; then
 fi
 
 # Создаем файл лога, если он не существует
-if [ ! -f "$LOG_FILE" ]; then
+if [ ! -f "$LOG_FILE" ];then
     echo "Создание файла лога..."
     touch "$LOG_FILE" || { echo "Ошибка создания файла лога."; exit 1; }
 fi
@@ -101,6 +101,17 @@ fi
 
 log "Установка или обновление завершены успешно."
 
+# Добавляем алиас в ~/.bashrc для команды upstart
+if ! grep -q "alias upstart=" ~/.bashrc; then
+    log "Добавляем алиас upstart в ~/.bashrc..."
+    echo '# Алиас для быстрого запуска update-and-start.sh' >> ~/.bashrc
+    echo 'alias upstart="bash $(find ~ -name \"update-and-start.sh\" 2>/dev/null | head -n 1)"' >> ~/.bashrc
+    log "Алиас upstart успешно добавлен."
+    source ~/.bashrc
+else
+    log "Алиас upstart уже существует в ~/.bashrc."
+fi
+
 # Создание скрипта update-and-start.sh для обновления и запуска одной командой
 log "Создание скрипта update-and-start.sh..."
 cat << 'EOF' > "$PROJECT_DIR/update-and-start.sh"
@@ -117,6 +128,11 @@ cd pyChainLite/
 
 # Запускаем скрипт start.sh
 ./start.sh
+
+# Проверяем наличие алиаса upstart и выводим сообщение
+if grep -q "alias upstart=" ~/.bashrc; then
+    echo "Для быстрого запуска проекта можно использовать команду 'upstart' из любого места."
+fi
 EOF
 
 # Делаем скрипт исполняемым
