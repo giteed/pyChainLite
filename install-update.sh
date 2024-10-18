@@ -104,8 +104,9 @@ log "Установка или обновление завершены успе�
 # Добавляем алиас в ~/.bashrc для команды upstart
 if ! grep -q "alias upstart=" ~/.bashrc; then
     log "Добавляем алиас upstart в ~/.bashrc..."
+    # Вставляем полный путь до скрипта update-and-start.sh
     echo '# Алиас для быстрого запуска update-and-start.sh' >> ~/.bashrc
-    echo 'alias upstart="bash $(find ~ -name \"update-and-start.sh\" 2>/dev/null | head -n 1)"' >> ~/.bashrc
+    echo "alias upstart='bash $PROJECT_DIR/update-and-start.sh'" >> ~/.bashrc
     log "Алиас upstart успешно добавлен."
     source ~/.bashrc
 else
