@@ -2,6 +2,7 @@ import os
 import subprocess
 from rich.console import Console
 from rich.table import Table
+import sys
 
 console = Console()
 
@@ -20,17 +21,12 @@ def display_menu():
 
 def run_blockchain():
     console.print("🚀 [bold green]Запуск блокчейна...[/bold green]")
-    # Здесь будет код для запуска блокчейна
-    # Например, subprocess.call(['python', 'blockchain.py'])
 
 def user_authorization():
     console.print("🔑 [bold yellow]Авторизация пользователя...[/bold yellow]")
-    # Здесь будет код для авторизации пользователя
-    # Например, subprocess.call(['python', 'auth.py'])
 
 def view_logs():
     console.print("📄 [bold blue]Открытие логов...[/bold blue]")
-    # Открытие логов
     log_file = os.path.join("logs", "install-update.log")
     if os.path.exists(log_file):
         with open(log_file, 'r') as f:
@@ -40,7 +36,8 @@ def view_logs():
 
 def run_tests():
     console.print("🧪 [bold magenta]Запуск тестов...[/bold magenta]")
-    # Запуск тестов через pytest
+    # Добавление пути к папке src в PYTHONPATH
+    sys.path.append(os.path.join(os.getcwd(), "src"))
     try:
         subprocess.run(['pytest'], check=True)
     except subprocess.CalledProcessError as e:
