@@ -16,7 +16,7 @@ class Block:
     def __init__(self, index, data, previous_hash):
         self.index = index                        # Номер блока
         self.timestamp = time.time()              # Время создания блока
-        self.data = data                          # Данные блока
+        self.data = data                          # Данные блока (может включать имя владельца для генезис-блока)
         self.previous_hash = previous_hash        # Хеш предыдущего блока
         self.hash = self.calculate_hash()         # Хеш текущего блока
 
@@ -61,7 +61,9 @@ def create_new_blockchain():
 
     owner = input("Введите имя владельца блокчейна: ")
     current_blockchain = Blockchain(blockchain_name, owner)
-    genesis_block = Block(0, blockchain_name, "0" * 64)  # Генезис блок
+    
+    # Генезис блок с именем владельца в данных
+    genesis_block = Block(0, {"blockchain_name": blockchain_name, "owner": owner}, "0" * 64)
     current_blockchain.blocks.append(genesis_block)
 
     # Сохраняем блокчейн в файл
@@ -129,7 +131,7 @@ def run_tests():
 
 def view_all_blockchains():
     """
-    Выводит список всех блокчейнов и генезис-блоков (нулевых блоков).
+    Выводит список всех блокчейнов и генезис-блоков (нулевых блоков), включая имя владельца.
     """
     if not os.path.exists(BLOCKCHAIN_DIR):
         console.print("[bold red]Нет доступных блокчейнов.[/bold red]")
@@ -137,15 +139,16 @@ def view_all_blockchains():
 
     table = Table(title="Список блокчейнов", show_header=True, header_style="bold cyan")
     table.add_column("Имя блокчейна")
-    table.add_column("Данные генезис-блока")
+    table.add_column("Владелец")
     table.add_column("Хеш генезис-блока")
 
     for blockchain_file in os.listdir(BLOCKCHAIN_DIR):
         with open(os.path.join(BLOCKCHAIN_DIR, blockchain_file), 'r') as file:
             blockchain_data = json.load(file)
             genesis_block = blockchain_data['blocks'][0]
-            blockchain_name = genesis_block["data"]  # Имя блокчейна хранится в data генезис-блока
-            table.add_row(blockchain_name, genesis_block["data"], genesis_block["hash"])
+            blockchain_name = genesis_block["data"]["blockchain_name"]
+            owner = genesis_block["data"]["owner"]
+            table.add_row(blockchain_name, owner, genesis_block["hash"])
 
     console.print(table)
 
@@ -180,7 +183,7 @@ def main():
         elif choice == '5':
             run_tests()
         elif choice == '6':
-            view_all_blockchains()  # Новый пункт для вывода всех блокчейнов
+            view_all_blockchains()
         elif choice == '7':
             console.print("[bold green]Выход...[/bold green]")
             break
