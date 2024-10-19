@@ -18,7 +18,9 @@ def display_menu():
     table.add_row("2", "Добавить новый блок")
     table.add_row("3", "Просмотреть блоки")
     table.add_row("4", "Запустить тесты")
-    table.add_row("5", "Выйти")
+    table.add_row("5", "Проверить/Создать алиас upstart")
+    table.add_row("6", "Обновить проект")
+    table.add_row("7", "Выйти")
 
     console.print(table)
 
@@ -60,10 +62,36 @@ def run_tests():
     except subprocess.CalledProcessError as e:
         console.print(f"[bold red]Ошибка при запуске тестов: {e}[/bold red]")
 
+def check_or_create_alias():
+    console.print("🔍 [bold yellow]Проверка или создание алиаса upstart...[/bold yellow]")
+    alias_command = "alias upstart='bash $(find ~ -name \"update-and-start.sh\" 2>/dev/null | head -n 1)'"
+    
+    # Проверка наличия алиаса
+    with open(os.path.expanduser('~/.bashrc'), 'r') as bashrc:
+        lines = bashrc.readlines()
+    
+    alias_exists = any('alias upstart' in line for line in lines)
+    
+    if alias_exists:
+        console.print("[bold green]Алиас upstart уже существует.[/bold green]")
+    else:
+        # Добавляем алиас в ~/.bashrc
+        with open(os.path.expanduser('~/.bashrc'), 'a') as bashrc:
+            bashrc.write(f'\n# Алиас для быстрого запуска update-and-start.sh\n{alias_command}\n')
+        console.print("[bold green]Алиас upstart был создан. Перезапустите терминал или выполните 'source ~/.bashrc'.[/bold green]")
+
+def update_project():
+    console.print("🔄 [bold blue]Запуск обновления проекта...[/bold blue]")
+    try:
+        subprocess.run(['./install-update.sh'], check=True)
+        console.print("[bold green]Проект успешно обновлён.[/bold green]")
+    except subprocess.CalledProcessError as e:
+        console.print(f"[bold red]Ошибка при обновлении проекта: {e}[/bold red]")
+
 def main():
     while True:
         display_menu()
-        choice = input("Выберите действие (1-5): ")
+        choice = input("Выберите действие (1-7): ")
         
         if choice == '1':
             run_blockchain()
@@ -74,10 +102,14 @@ def main():
         elif choice == '4':
             run_tests()
         elif choice == '5':
+            check_or_create_alias()
+        elif choice == '6':
+            update_project()
+        elif choice == '7':
             console.print("[bold green]Выход...[/bold green]")
             break
         else:
-            console.print("[bold red]Неверный выбор. Пожалуйста, выберите действие от 1 до 5.[/bold red]")
+            console.print("[bold red]Неверный выбор. Пожалуйста, выберите действие от 1 до 7.[/bold red]")
 
 if __name__ == "__main__":
     main()
