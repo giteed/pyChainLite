@@ -131,13 +131,14 @@ def run_tests():
 
 def view_all_blockchains():
     """
-    Выводит список всех блокчейнов и генезис-блоков (нулевых блоков), включая имя владельца.
+    Выводит список всех блокчейнов, включая имя файла, владельца и хеш генезис-блока.
     """
     if not os.path.exists(BLOCKCHAIN_DIR):
         console.print("[bold red]Нет доступных блокчейнов.[/bold red]")
         return
 
     table = Table(title="Список блокчейнов", show_header=True, header_style="bold cyan")
+    table.add_column("Имя файла блокчейна")
     table.add_column("Имя блокчейна")
     table.add_column("Владелец")
     table.add_column("Хеш генезис-блока")
@@ -148,7 +149,7 @@ def view_all_blockchains():
             genesis_block = blockchain_data['blocks'][0]
             blockchain_name = genesis_block["data"]["blockchain_name"]
             owner = genesis_block["data"]["owner"]
-            table.add_row(blockchain_name, owner, genesis_block["hash"])
+            table.add_row(blockchain_file, blockchain_name, owner, genesis_block["hash"])
 
     console.print(table)
 
