@@ -84,6 +84,35 @@ def load_blockchain():
     current_blockchain = blockchain_data
     current_blockchain["file"] = blockchain_file
 
+# Функция для создания нового блока
+def create_new_block():
+    if not current_blockchain:
+        console.print("[red]Сначала загрузите блокчейн.[/red]")
+        return
+
+    # Получаем данные для нового блока
+    data = input("Введите данные для нового блока: ").strip()
+    if not data:
+        console.print("[red]Данные для блока не могут быть пустыми.[/red]")
+        return
+
+    last_block = current_blockchain["blocks"][-1]
+    new_block = Block(
+        index=last_block["index"] + 1,
+        data=data,
+        previous_hash=last_block["hash"]
+    )
+
+    # Добавляем новый блок в текущий блокчейн
+    current_blockchain["blocks"].append(new_block.__dict__)
+
+    # Сохраняем изменения в файл
+    blockchain_path = os.path.join(BLOCKCHAIN_DIR, current_blockchain["file"])
+    with open(blockchain_path, 'w') as f:
+        json.dump(current_blockchain, f, indent=4)
+
+    console.print(f"[green]Новый блок успешно добавлен в блокчейн.[/green]")
+
 # Функция для вывода списка блокчейнов
 def list_blockchains():
     if not os.path.exists(BLOCKCHAIN_DIR):
@@ -141,12 +170,13 @@ def display_menu():
     table.add_column("Действие", style="bold")
     
     table.add_row("1", "Создать новый блокчейн")
-    table.add_row("2", "Загрузить существующий блокчейн")
-    table.add_row("3", "Просмотреть блоки текущего блокчейна")
-    table.add_row("4", "Запустить тесты")
-    table.add_row("5", "Показать список блокчейнов")
-    table.add_row("6", "Обновить проект")
-    table.add_row("7", "Выйти")
+    table.add_row("2", "Загрузить существующий блокчейна")
+    table.add_row("3", "Создать новый блок в текущем блокчейне")
+    table.add_row("4", "Просмотреть блоки текущего блокчейна")
+    table.add_row("5", "Запустить тесты")
+    table.add_row("6", "Показать список блокчейнов")
+    table.add_row("7", "Обновить проект")
+    table.add_row("8", "Выйти")
 
     console.print(table)
 
@@ -154,28 +184,30 @@ def display_menu():
 def main():
     while True:
         display_menu()
-        choice = input("Выберите действие (1-7): ").strip()
+        choice = input("Выберите действие (1-8): ").strip()
         
         if choice == '1':
             create_blockchain()
         elif choice == '2':
             load_blockchain()
         elif choice == '3':
+            create_new_block()
+        elif choice == '4':
             if current_blockchain:
                 console.print(json.dumps(current_blockchain, indent=4))
             else:
                 console.print("[bold red]Сначала загрузите блокчейн.[/bold red]")
-        elif choice == '4':
-            run_tests()
         elif choice == '5':
-            list_blockchains()
+            run_tests()
         elif choice == '6':
-            update_project()
+            list_blockchains()
         elif choice == '7':
+            update_project()
+        elif choice == '8':
             console.print("[bold green]Выход...[/bold green]")
             break
         else:
-            console.print("[bold red]Неверный выбор. Пожалуйста, выберите действие от 1 до 7.[/bold red]")
+            console.print("[bold red]Неверный выбор. Пожалуйста, выберите действие от 1 до 8.[/bold red]")
 
 if __name__ == "__main__":
     main()
