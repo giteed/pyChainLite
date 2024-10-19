@@ -71,6 +71,7 @@ fi
 
 log "Проверка и создание необходимых директорий..."
 chmod +x "$PROJECT_DIR/create_dirs.sh"
+chmod +x "$PROJECT_DIR/update-and-start.sh"
 "$PROJECT_DIR/create_dirs.sh"
 
 # Если проект уже существует, выполняем обновление
