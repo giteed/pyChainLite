@@ -146,3 +146,4 @@ deactivate
 cd "$BASE_DIR"
 
 log "Скрипт завершил работу. Лог записан в $LOG_FILE."
+
