@@ -1,117 +1,147 @@
 import os
-import hashlib
 import json
-import subprocess
+import hashlib
+import time
 from rich.console import Console
 from rich.table import Table
-from src.blockchain import Block
 
 console = Console()
 
-# Инициализируем блокчейн
-blockchain = []
-
-# Путь для хранения блокчейнов
+# Директория для хранения блокчейнов
 BLOCKCHAIN_DIR = "blockchains"
 
-def ensure_blockchain_dir():
-    """Создаем папку для хранения всех блокчейнов, если ее нет"""
-    if not os.path.exists(BLOCKCHAIN_DIR):
-        os.makedirs(BLOCKCHAIN_DIR)
+# Глобальная переменная для хранения текущего блокчейна
+current_blockchain = None
+current_blockchain_file = None
 
-def save_blockchain_to_file(blockchain_name, blockchain):
-    """Сохраняем блокчейн в файл"""
-    filename = f"{BLOCKCHAIN_DIR}/{blockchain_name}.json"
-    with open(filename, "w") as f:
-        json.dump({"blocks": [block.__dict__ for block in blockchain]}, f, indent=4)
+class Block:
+    def __init__(self, index, data, previous_hash):
+        self.index = index
+        self.timestamp = time.time()
+        self.data = data
+        self.previous_hash = previous_hash
+        self.hash = self.calculate_hash()
 
-def create_genesis_block(blockchain_name):
-    """Создание генезис-блока с хешем имени блокчейна"""
-    blockchain_name_hash = hashlib.sha256(blockchain_name.encode()).hexdigest()
-    genesis_block = Block(0, blockchain_name, "0" * 64)
-    blockchain.append(genesis_block)
-    return blockchain_name_hash
+    def calculate_hash(self):
+        block_data = f"{self.index}{self.timestamp}{self.data}{self.previous_hash}"
+        return hashlib.sha256(block_data.encode()).hexdigest()
+
+    def __repr__(self):
+        return (f"Block(index: {self.index}, timestamp: {self.timestamp}, "
+                f"data: {self.data}, previous_hash: {self.previous_hash}, hash: {self.hash})")
+
+class Blockchain:
+    def __init__(self, name, genesis_data):
+        self.name = name
+        self.blocks = []
+        genesis_block = Block(0, genesis_data, "0" * 64)
+        self.blocks.append(genesis_block)
+
+    def add_block(self, data):
+        last_block = self.blocks[-1]
+        new_block = Block(last_block.index + 1, data, last_block.hash)
+        self.blocks.append(new_block)
+
+    def save_to_file(self):
+        with open(current_blockchain_file, 'w') as file:
+            json.dump({"blocks": [block.__dict__ for block in self.blocks]}, file, indent=4)
 
 def display_menu():
     table = Table(title="Меню pyChainLite", show_header=True, header_style="bold cyan")
     table.add_column("Номер", style="dim")
     table.add_column("Действие", style="bold")
     
-    table.add_row("1", "Запустить блокчейн")
-    table.add_row("2", "Добавить новый блок")
-    table.add_row("3", "Просмотреть блоки")
-    table.add_row("4", "Запустить тесты")
-    table.add_row("5", "Проверить/Создать алиас upstart")
-    table.add_row("6", "Обновить проект")
-    table.add_row("7", "Выйти")
-
+    table.add_row("1", "Создать новый блокчейн")
+    table.add_row("2", "Загрузить блокчейн")
+    table.add_row("3", "Добавить блок")
+    table.add_row("4", "Просмотреть блоки")
+    table.add_row("5", "Выйти")
+    
     console.print(table)
 
-def run_blockchain():
-    console.print("🚀 [bold green]Запуск блокчейна...[/bold green]")
-    blockchain_name = input("Введите имя блокчейна: ")
-    ensure_blockchain_dir()
-    
-    # Генерация хеша имени блокчейна
-    blockchain_name_hash = create_genesis_block(blockchain_name)
-    
-    console.print(f"Создан генезис блок для блокчейна '{blockchain_name}' с хешем: {blockchain_name_hash}")
-    
-    # Сохранение блокчейна в файл
-    save_blockchain_to_file(blockchain_name_hash, blockchain)
-    console.print(f"Блокчейн '{blockchain_name}' сохранён в файл {blockchain_name_hash}.json")
+def create_blockchain():
+    global current_blockchain, current_blockchain_file
 
-def add_new_block():
-    if not blockchain:
-        console.print("[bold red]Блокчейн ещё не запущен. Запустите блокчейн сначала.[/bold red]")
+    blockchain_name = input("Введите имя для нового блокчейна: ")
+    blockchain_hash = hashlib.sha256(blockchain_name.encode()).hexdigest()
+    blockchain_file = os.path.join(BLOCKCHAIN_DIR, f"{blockchain_hash}.json")
+
+    # Проверяем, существует ли уже такой блокчейн
+    if os.path.exists(blockchain_file):
+        console.print(f"[bold red]Ошибка: блокчейн с именем '{blockchain_name}' уже существует.[/bold red]")
         return
 
-    # Получаем данные для нового блока
+    # Создаем новый блокчейн
+    genesis_data = input("Введите данные для генезис блока: ")
+    current_blockchain = Blockchain(blockchain_name, genesis_data)
+    current_blockchain_file = blockchain_file
+
+    # Сохраняем блокчейн в файл
+    current_blockchain.save_to_file()
+    console.print(f"[bold green]Новый блокчейн '{blockchain_name}' создан и сохранён как {blockchain_hash}.json.[/bold green]")
+
+def load_blockchain():
+    global current_blockchain, current_blockchain_file
+
+    blockchain_name = input("Введите имя блокчейна для загрузки: ")
+    blockchain_hash = hashlib.sha256(blockchain_name.encode()).hexdigest()
+    blockchain_file = os.path.join(BLOCKCHAIN_DIR, f"{blockchain_hash}.json")
+
+    # Проверяем, существует ли блокчейн
+    if not os.path.exists(blockchain_file):
+        console.print(f"[bold red]Ошибка: блокчейн с именем '{blockchain_name}' не найден.[/bold red]")
+        return
+
+    # Загружаем блокчейн
+    with open(blockchain_file, 'r') as file:
+        blockchain_data = json.load(file)
+        current_blockchain = Blockchain(blockchain_name, "")
+        current_blockchain.blocks = [Block(**block) for block in blockchain_data["blocks"]]
+        current_blockchain_file = blockchain_file
+
+    console.print(f"[bold green]Блокчейн '{blockchain_name}' загружен.[/bold green]")
+
+def add_block():
+    if current_blockchain is None:
+        console.print("[bold red]Ошибка: сначала загрузите или создайте блокчейн.[/bold red]")
+        return
+
     data = input("Введите данные для нового блока: ")
-    last_block = blockchain[-1]
-    new_block = Block(last_block.index + 1, data, last_block.hash)
-    blockchain.append(new_block)
-    
-    # Сохранение обновленного блокчейна
-    save_blockchain_to_file(last_block.data, blockchain)  # Используем имя блокчейна (в генезис-блоке)
-    console.print(f"Добавлен новый блок: {new_block}")
+    current_blockchain.add_block(data)
+    current_blockchain.save_to_file()
+    console.print("[bold green]Новый блок добавлен в блокчейн.[/bold green]")
 
 def view_blocks():
-    if not blockchain:
-        console.print("[bold red]Блокчейн ещё не запущен.[/bold red]")
+    if current_blockchain is None:
+        console.print("[bold red]Ошибка: сначала загрузите или создайте блокчейн.[/bold red]")
         return
 
     console.print("[bold blue]Текущие блоки в блокчейне:[/bold blue]")
-    for block in blockchain:
+    for block in current_blockchain.blocks:
         console.print(block)
-
-def run_tests():
-    console.print("🧪 [bold magenta]Запуск тестов...[/bold magenta]")
-    env = os.environ.copy()
-    env['PYTHONPATH'] = os.path.join(os.getcwd(), "src")
-    try:
-        subprocess.run(['pytest'], check=True, env=env)
-    except subprocess.CalledProcessError as e:
-        console.print(f"[bold red]Ошибка при запуске тестов: {e}[/bold red]")
 
 def main():
     while True:
         display_menu()
-        choice = input("Выберите действие (1-7): ")
+        choice = input("Выберите действие (1-5): ")
         
         if choice == '1':
-            run_blockchain()
+            create_blockchain()
         elif choice == '2':
-            add_new_block()
+            load_blockchain()
         elif choice == '3':
-            view_blocks()
+            add_block()
         elif choice == '4':
-            run_tests()
+            view_blocks()
         elif choice == '5':
             console.print("[bold green]Выход...[/bold green]")
             break
         else:
-            console.print("[bold red]Неверный выбор. Пожалуйста, выберите действие от 1 до 7.[/bold red]")
+            console.print("[bold red]Неверный выбор. Пожалуйста, выберите действие от 1 до 5.[/bold red]")
 
 if __name__ == "__main__":
+    # Проверяем, существует ли директория для блокчейнов
+    if not os.path.exists(BLOCKCHAIN_DIR):
+        os.makedirs(BLOCKCHAIN_DIR)
+
     main()
