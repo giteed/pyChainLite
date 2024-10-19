@@ -3,8 +3,8 @@
 # Получаем путь к директории скрипта
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
-# Определяем пути для папок проекта и логов
-PROJECT_DIR="$SCRIPT_DIR/pyChainLite"
+# Определяем путь для папки проекта
+PROJECT_DIR="$SCRIPT_DIR"
 LOG_DIR="$PROJECT_DIR/logs"
 LOG_FILE="$LOG_DIR/install-update.log"
 
@@ -14,9 +14,14 @@ log() {
 }
 
 # Проверяем существование папки проекта
-if [ ! -d "$PROJECT_DIR" ]; then
-    log "Папка проекта не найдена. Создаю папку $PROJECT_DIR..."
-    mkdir -p "$PROJECT_DIR" || { log "Ошибка: не удалось создать папку проекта."; exit 1; }
+if [ ! -d "$PROJECT_DIR/.git" ]; then
+    log "Часть файлов проекта отсутствует или проект не является git-репозиторием. Клонирую заново..."
+    
+    # Удаляем проект, если он неполный, и клонируем заново
+    rm -rf "$PROJECT_DIR"
+    git clone https://github.com/giteed/pyChainLite.git "$PROJECT_DIR" || { log "Ошибка клонирования репозитория."; exit 1; }
+    
+    log "Клонирование завершено успешно."
 fi
 
 # Создаем папку для логов, если она не существует
@@ -48,31 +53,6 @@ if ! command -v git &> /dev/null; then
 fi
 
 log "Git установлен: $(git --version)"
-
-# Если проекта нет или часть файлов отсутствует, клонируем репозиторий заново
-if [ ! -d "$PROJECT_DIR/.git" ] || [ ! -f "$PROJECT_DIR/create_dirs.sh" ]; then
-    log "Часть файлов проекта отсутствует или проект не является git-репозиторием. Клонирую заново..."
-    
-    # Удаляем проект, если он неполный, и клонируем заново
-    rm -rf "$PROJECT_DIR"
-    git clone https://github.com/giteed/pyChainLite.git "$PROJECT_DIR" || { log "Ошибка клонирования репозитория."; exit 1; }
-    
-    log "Клонирование завершено успешно."
-fi
-
-# Перемещаемся в папку проекта
-cd "$PROJECT_DIR" || { log "Ошибка: не удается зайти в директорию проекта."; exit 1; }
-
-# Запуск скрипта для создания папок src и tests
-if [ ! -f "$PROJECT_DIR/create_dirs.sh" ]; then
-    log "Ошибка: скрипт create_dirs.sh не найден даже после клонирования."
-    exit 1
-fi
-
-log "Проверка и создание необходимых директорий..."
-chmod +x "$PROJECT_DIR/create_dirs.sh"
-chmod +x "$PROJECT_DIR/update-and-start.sh"
-"$PROJECT_DIR/create_dirs.sh"
 
 # Если проект уже существует, выполняем обновление
 if [ -d "$PROJECT_DIR/.git" ]; then
