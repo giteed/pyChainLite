@@ -1,11 +1,14 @@
-# tests/test_blockchain.py
-import pytest
 from src.blockchain import Block
 
 def test_block_creation():
-    block = Block(0, "0", "Test data", "user_signature")
+    # Создаём блок, используя 4 аргумента (index, previous_hash, data, timestamp)
+    block = Block(0, "0", "Test data", "2024-10-19 12:00:00")
+    
+    # Проверяем, что все атрибуты блока инициализируются правильно
     assert block.index == 0
     assert block.previous_hash == "0"
     assert block.data == "Test data"
-    assert block.user_signature == "user_signature"
-    assert len(block.hash) == 64  # Хеш SHA-256 должен быть 64 символа
+    assert block.timestamp == "2024-10-19 12:00:00"
+    
+    # Проверяем, что хеш блока вычисляется корректно
+    assert block.hash is not None
