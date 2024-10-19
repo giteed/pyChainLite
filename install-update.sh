@@ -115,7 +115,7 @@ fi
 
 # Создание скрипта update-and-start.sh для обновления и запуска одной командой
 log "Создание скрипта update-and-start.sh..."
-cat << 'EOF' > "$PROJECT_DIR/update-and-start.sh"
+cat << EOF > "$PROJECT_DIR/update-and-start.sh"
 #!/bin/bash
 
 # Переходим в родительскую директорию
