@@ -62,29 +62,27 @@ def run_tests():
     except subprocess.CalledProcessError as e:
         console.print(f"[bold red]Ошибка при запуске тестов: {e}[/bold red]")
 
-def check_or_create_alias():
-    console.print("🔍 [bold yellow]Проверка или создание алиаса upstart...[/bold yellow]")
-    alias_command = "alias upstart='bash $(find ~ -name \"update-and-start.sh\" 2>/dev/null | head -n 1)'"
+def check_alias():
+    console.print("🔄 [bold yellow]Проверка алиаса upstart...[/bold yellow]")
+    with open(os.path.expanduser("~/.bashrc"), "r") as file:
+        bashrc_content = file.read()
     
-    # Проверка наличия алиаса
-    with open(os.path.expanduser('~/.bashrc'), 'r') as bashrc:
-        lines = bashrc.readlines()
-    
-    alias_exists = any('alias upstart' in line for line in lines)
-    
-    if alias_exists:
+    if "alias upstart=" in bashrc_content:
         console.print("[bold green]Алиас upstart уже существует.[/bold green]")
     else:
-        # Добавляем алиас в ~/.bashrc
-        with open(os.path.expanduser('~/.bashrc'), 'a') as bashrc:
-            bashrc.write(f'\n# Алиас для быстрого запуска update-and-start.sh\n{alias_command}\n')
-        console.print("[bold green]Алиас upstart был создан. Перезапустите терминал или выполните 'source ~/.bashrc'.[/bold green]")
+        console.print("[bold yellow]Алиас upstart не найден. Добавьте его вручную в ~/.bashrc.[/bold yellow]")
 
 def update_project():
-    console.print("🔄 [bold blue]Запуск обновления проекта...[/bold blue]")
+    console.print("🔄 [bold yellow]Запуск обновления проекта...[/bold yellow]")
+    
+    # Устанавливаем права на выполнение для install-update.sh
+    if not os.access('./install-update.sh', os.X_OK):
+        console.print("[bold yellow]Устанавливаю права на выполнение для install-update.sh[/bold yellow]")
+        os.chmod('./install-update.sh', 0o755)
+
     try:
+        # Запускаем скрипт обновления
         subprocess.run(['./install-update.sh'], check=True)
-        console.print("[bold green]Проект успешно обновлён.[/bold green]")
     except subprocess.CalledProcessError as e:
         console.print(f"[bold red]Ошибка при обновлении проекта: {e}[/bold red]")
 
@@ -102,7 +100,7 @@ def main():
         elif choice == '4':
             run_tests()
         elif choice == '5':
-            check_or_create_alias()
+            check_alias()
         elif choice == '6':
             update_project()
         elif choice == '7':
