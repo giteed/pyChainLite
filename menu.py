@@ -127,6 +127,28 @@ def run_tests():
     except subprocess.CalledProcessError as e:
         console.print(f"[bold red]Ошибка при запуске тестов: {e}[/bold red]")
 
+def view_all_blockchains():
+    """
+    Выводит список всех блокчейнов и генезис-блоков (нулевых блоков).
+    """
+    if not os.path.exists(BLOCKCHAIN_DIR):
+        console.print("[bold red]Нет доступных блокчейнов.[/bold red]")
+        return
+
+    table = Table(title="Список блокчейнов", show_header=True, header_style="bold cyan")
+    table.add_column("Имя блокчейна")
+    table.add_column("Данные генезис-блока")
+    table.add_column("Хеш генезис-блока")
+
+    for blockchain_file in os.listdir(BLOCKCHAIN_DIR):
+        with open(os.path.join(BLOCKCHAIN_DIR, blockchain_file), 'r') as file:
+            blockchain_data = json.load(file)
+            genesis_block = blockchain_data['blocks'][0]
+            blockchain_name = genesis_block["data"]  # Имя блокчейна хранится в data генезис-блока
+            table.add_row(blockchain_name, genesis_block["data"], genesis_block["hash"])
+
+    console.print(table)
+
 def display_menu():
     table = Table(title="Меню pyChainLite", show_header=True, header_style="bold cyan")
     table.add_column("Номер", style="dim")
@@ -137,14 +159,15 @@ def display_menu():
     table.add_row("3", "Просмотреть блоки")
     table.add_row("4", "Добавить новый блок")
     table.add_row("5", "Запустить тесты")
-    table.add_row("6", "Выйти")
+    table.add_row("6", "Просмотреть список блокчейнов")
+    table.add_row("7", "Выйти")
 
     console.print(table)
 
 def main():
     while True:
         display_menu()
-        choice = input("Выберите действие (1-6): ")
+        choice = input("Выберите действие (1-7): ")
 
         if choice == '1':
             create_new_blockchain()
@@ -157,10 +180,12 @@ def main():
         elif choice == '5':
             run_tests()
         elif choice == '6':
+            view_all_blockchains()  # Новый пункт для вывода всех блокчейнов
+        elif choice == '7':
             console.print("[bold green]Выход...[/bold green]")
             break
         else:
-            console.print("[bold red]Неверный выбор. Пожалуйста, выберите действие от 1 до 6.[/bold red]")
+            console.print("[bold red]Неверный выбор. Пожалуйста, выберите действие от 1 до 7.[/bold red]")
 
 if __name__ == "__main__":
     main()
