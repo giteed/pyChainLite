@@ -5,3 +5,5 @@ test_blockchain.py
 TEMP/
 blockchain_tar_gz/
 logs/
+src/__init__.py
+tests/__init__.py
