@@ -86,8 +86,9 @@ if [ -d "$PROJECT_DIR/.git" ]; then
     log "Обновление репозитория..."
     git pull origin main || { log "Ошибка при обновлении репозитория."; exit 1; }
 
-    log "Установка прав на выполнение для start.sh..."
+    log "Установка прав на выполнение для start.sh и update-and-start.sh..."
     chmod +x "$PROJECT_DIR/start.sh" || { log "Ошибка при установке прав на выполнение для start.sh."; exit 1; }
+    chmod +x "$PROJECT_DIR/update-and-start.sh" || { log "Ошибка при установке прав на выполнение для update-and-start.sh."; exit 1; }
 fi
 
 # Перемещаемся в директорию проекта для установки зависимостей
