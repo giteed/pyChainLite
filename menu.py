@@ -39,14 +39,21 @@ def background_test_runner():
 
 def display_menu():
     # Отображение текущего состояния блокчейна
+    menu_width = 50  # Ширина меню для центрирования
+    
     if current_blockchain:
-        console.print(f"Текущий блокчейн: [bold green]{current_blockchain['blocks'][0]['data']['blockchain_name']}[/bold green]")
+        blockchain_info = f"Текущий блокчейн: {current_blockchain['blocks'][0]['data']['blockchain_name']}"
     else:
-        console.print("[bold red]Блокчейн не загружен[/bold red]")
-
-    # Вывод результата тестов
-    console.print(test_result_message)
-
+        blockchain_info = "Блокчейн не загружен"
+    
+    # Центрирование статуса тестов
+    test_status = test_result_message.center(menu_width)
+    console.print(test_status)
+    
+    # Центрирование информации о блокчейне
+    blockchain_status = blockchain_info.center(menu_width)
+    console.print(blockchain_status)
+    
     # Основное меню
     table = Table(title="Меню pyChainLite", show_header=True, header_style="bold cyan")
     table.add_column("##", style="dim")
@@ -54,10 +61,10 @@ def display_menu():
     
     table.add_row("1", "🧱 Создать новый блокчейн")
     table.add_row("2", "📂 Загрузить блокчейн")
-    table.add_row("3", "📜 Список блокчейнов")
+    table.add_row("5", "📜 Список блокчейнов")
     table.add_row("", "")  # Пустая строка для разделения секций
-    table.add_row("4", "📝 Создать новый блок")
-    table.add_row("5", "🔍 Просмотреть блоки")
+    table.add_row("3", "📝 Создать новый блок")
+    table.add_row("4", "🔍 Просмотреть блоки")
     table.add_row("", "")  # Пустая строка для разделения секций
     table.add_row("6", "🧪 Запустить тесты")
     table.add_row("", "")  # Пустая строка для разделения секций
