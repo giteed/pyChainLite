@@ -14,7 +14,6 @@ from modules.help_menu import display_help_menu
 
 console = Console()
 current_blockchain = None  # Переменная для отслеживания текущего блокчейна
-test_result_message = "🧪 Запуск тестов... [green]OK 👍[/green]"
 
 def display_menu():
     # Основное меню
@@ -37,45 +36,37 @@ def display_menu():
     
     console.print(table)
 
-def main():
-    global current_blockchain
-
-    while True:
-        console.print("")  # Добавим пустую строку для разделения тестов
-        if current_blockchain:
-            console.print(f"Текущий блокчейн: [bold green]{current_blockchain['blocks'][0]['data']['blockchain_name']}[/bold green]")
-        else:
-            console.print("[bold red]Блокчейн не загружен[/bold red]")
-
-        display_menu()
-        
-        choice = input("Выберите действие (1-7, H или Q): ").strip().upper()
-        
-        # Обрабатываем выбор пользователя...
+    # Выводим информацию о блокчейне под таблицей
+    if current_blockchain:
+        console.print(f"[bold green]Текущий блокчейн: {current_blockchain['blocks'][0]['data']['blockchain_name']}[/bold green]")
+    else:
+        console.print("[bold red]Блокчейн не загружен[/bold red]")
 
 def main():
     global current_blockchain
 
     while True:
-        display_menu()
+        console.print("")  # Пустая строка для разделения
+        display_menu()  # Отображаем меню
+        
         choice = input("Выберите действие (1-7, H или Q): ").strip().upper()
-
+        
         if choice == '1':
             create_blockchain()
         elif choice == '2':
             current_blockchain = load_blockchain()  # Сохраняем загруженный блокчейн
         elif choice == '3':
+            list_blockchains()
+        elif choice == '4':
             if current_blockchain:
                 create_new_block(current_blockchain)
             else:
                 console.print("[bold red]Сначала загрузите блокчейн.[/bold red]")
-        elif choice == '4':
+        elif choice == '5':
             if current_blockchain:
                 view_blocks(current_blockchain)
             else:
                 console.print("[bold red]Сначала загрузите блокчейн.[/bold red]")
-        elif choice == '5':
-            list_blockchains()
         elif choice == '6':
             run_tests()
         elif choice == '7':
