@@ -1,12 +1,18 @@
 # cli_scripts/push_data_in_block.py
 # Скрипт для добавления данных в блок блокчейна через аргументы командной строки
 
-import argparse
+import sys
 import os
+
+# Добавляем путь к корневой директории проекта для поиска модулей
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/..")
+
+import argparse
 import json
-import hashlib  # Не забудьте импортировать hashlib для хеширования имен блокчейнов
+import hashlib  # Импорт hashlib для хеширования имен блокчейнов
 from modules.blockchain_loading import load_blockchain
 from modules.block_creation import create_new_block
+
 
 BLOCKCHAIN_DIR = "blockchains"  # Путь к папке с блокчейнами
 
@@ -25,7 +31,7 @@ def push_data_to_block(blockchain_name, user_id, data):
     with open(blockchain_path, 'r') as f:
         blockchain_data = json.load(f)
 
-    # Проверяем, есть ли у пользователя права на запись в блокчейн (простая проверка для примера)
+    # Проверяем, есть ли у пользователя права на запись в блокчейн
     if user_id != blockchain_data["blocks"][0]["data"]["owner"]:
         print(f"Ошибка: Пользователь '{user_id}' не имеет прав на запись в этот блокчейн.")
         return
