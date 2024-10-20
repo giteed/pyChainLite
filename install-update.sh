@@ -99,7 +99,7 @@ fi
 
 log "Установка или обновление завершены успешно."
 
-# Проверяем алиас для команды upstart в ~/.bashrc
+# Проверка алиаса для команды upstart в ~/.bashrc
 if grep -q "alias upstart=" ~/.bashrc; then
     # Если алиас существует, проверяем путь
     current_alias=$(grep "alias upstart=" ~/.bashrc | cut -d"'" -f2)
