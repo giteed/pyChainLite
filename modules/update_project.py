@@ -33,7 +33,7 @@ def update_project():
             subprocess.run(['git', 'stash'], check=True)
         else:
             console.print("[bold yellow]Отмена обновления.[/bold yellow]")
-            restart_menu()  # Добавляем перезапуск меню после отмены
+            restart_menu()  # Перезапуск меню после отмены
             return
 
     # Выполняем обновление
@@ -43,7 +43,7 @@ def update_project():
         console.print(result.stdout.decode())
     except subprocess.CalledProcessError as e:
         console.print(f"[bold red]Ошибка обновления: {e}[/bold red]")
-    
+
     # Возвращаем изменения из stash, если они были спрятаны
     stash_result = subprocess.run(['git', 'stash', 'list'], stdout=subprocess.PIPE)
     if stash_result.stdout:
@@ -52,8 +52,14 @@ def update_project():
         try:
             subprocess.run(['git', 'stash', 'pop'], check=True)
         except subprocess.CalledProcessError as e:
-            console.print(f"[bold red]Ошибка при восстановлении изменений: {e}. Конфликт в файлах. Пожалуйста, решите конфликт вручную.[/bold red]")
-            return
+            console.print(f"[bold red]Ошибка при восстановлении изменений: {e}. Конфликт в файлах.[/bold red]")
+            console.print("Желаете пропустить восстановление изменений для конфликтных файлов? (y/n)")
+            skip_conflict = input().lower()
+            if skip_conflict == 'y':
+                console.print("[bold yellow]Пропуск восстановления изменений.[/bold yellow]")
+            else:
+                console.print("[bold yellow]Решите конфликт вручную и повторите попытку.[/bold yellow]")
+                return
 
     # Возвращаем папку с блокчейнами обратно в проект
     if os.path.exists(backup_dir):
