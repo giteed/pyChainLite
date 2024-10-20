@@ -3,6 +3,7 @@
 
 import os
 import json
+from datetime import datetime  # Для работы с датой и временем
 from rich.console import Console
 from src.blockchain import Block
 
@@ -19,9 +20,12 @@ def create_new_block(current_blockchain, data, user_id=None):
     - user_id: идентификатор пользователя, который добавляет блок (опционально)
     """
     last_block = current_blockchain["blocks"][-1]
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # Читаемый формат времени
+
     new_block_data = {
         "data": data,
-        "added_by": user_id  # Добавляем идентификатор пользователя, если он передан
+        "added_by": user_id,  # Добавляем идентификатор пользователя
+        "timestamp": timestamp  # Время добавления
     }
     
     new_block = Block(
