@@ -7,7 +7,8 @@ from rich.table import Table
 
 console = Console()
 
-HELP_DIR = "doc/menu_help"
+# Обновите путь на правильный
+HELP_DIR = "docs/menu_help"  # Указали 'docs' вместо 'doc'
 
 def display_help_menu():
     table = Table(title="ℹ️  Описание функционала", show_header=True, header_style="bold yellow")
@@ -47,7 +48,7 @@ def display_help_content(choice):
 
     help_file = help_files.get(choice)
     if help_file:
-        file_path = os.path.join(HELP_DIR, help_file)
+        file_path = os.path.join(HELP_DIR, help_file)  # Ссылка на правильную папку
         if os.path.exists(file_path):
             with open(file_path, 'r') as f:
                 content = f.read()
