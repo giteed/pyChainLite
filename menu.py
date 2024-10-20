@@ -65,16 +65,15 @@ def display_menu():
     # Выводим таблицу меню
     console.print(table)
 
-    # Добавляем пустую строку перед информацией о блокчейне
-    console.print()
-
-    # Информация о текущем блокчейне, выровненная по центру
+    # Центрируем информацию о блокчейне относительно таблицы
     if current_blockchain:
         blockchain_info = f"[bold green]Текущий блокчейн: {current_blockchain['blocks'][0]['data']['blockchain_name']}[/bold green]"
     else:
         blockchain_info = "[bold red]Блокчейн не загружен[/bold red]"
 
-    console.print(blockchain_info, justify="center")
+    # Вычисляем центр для строки о блокчейне на основе ширины таблицы
+    table_width = table.columns[1].get_max_width() + table.columns[0].get_max_width() + 5  # Ширина таблицы меню
+    console.print(blockchain_info.center(table_width))  # Центрируем по ширине таблицы
 
 def main():
     global current_blockchain
