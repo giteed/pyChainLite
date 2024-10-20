@@ -17,12 +17,6 @@ current_blockchain = None  # Переменная для отслеживани�
 test_result_message = "🧪 Запуск тестов... [green]OK 👍[/green]"
 
 def display_menu():
-    # Отображение текущего состояния блокчейна
-    if current_blockchain:
-        console.print(f"Текущий блокчейн: [bold green]{current_blockchain['blocks'][0]['data']['blockchain_name']}[/bold green]")
-    else:
-        console.print("[bold red]Блокчейн не загружен[/bold red]")
-
     # Основное меню
     table = Table(title="Меню pyChainLite", show_header=True, header_style="bold cyan")
     table.add_column("##", style="dim")
@@ -30,10 +24,10 @@ def display_menu():
     
     table.add_row("1", "🧱 Создать новый блокчейн")
     table.add_row("2", "📂 Загрузить блокчейн")
-    table.add_row("3", "📜 Список блокчейнов")  # Было 5, исправлено на 3
+    table.add_row("3", "📜 Список блокчейнов")
     table.add_row("", "")  # Пустая строка для разделения секций
-    table.add_row("4", "📝 Создать новый блок")  # Было 3, исправлено на 4
-    table.add_row("5", "🔍 Просмотреть блоки")  # Было 4, исправлено на 5
+    table.add_row("4", "📝 Создать новый блок")
+    table.add_row("5", "🔍 Просмотреть блоки")
     table.add_row("", "")  # Пустая строка для разделения секций
     table.add_row("6", "🧪 Запустить тесты")
     table.add_row("", "")  # Пустая строка для разделения секций
@@ -43,11 +37,21 @@ def display_menu():
     
     console.print(table)
 
-    # Вывод информации о текущем блокчейне перед выбором действия
-    if current_blockchain:
-        console.print(f"\n[bold green]Текущий блокчейн: {current_blockchain['blocks'][0]['data']['blockchain_name']}[/bold green]")
-    else:
-        console.print("\n[bold red]Блокчейн не загружен[/bold red]")
+def main():
+    global current_blockchain
+
+    while True:
+        console.print("")  # Добавим пустую строку для разделения тестов
+        if current_blockchain:
+            console.print(f"Текущий блокчейн: [bold green]{current_blockchain['blocks'][0]['data']['blockchain_name']}[/bold green]")
+        else:
+            console.print("[bold red]Блокчейн не загружен[/bold red]")
+
+        display_menu()
+        
+        choice = input("Выберите действие (1-7, H или Q): ").strip().upper()
+        
+        # Обрабатываем выбор пользователя...
 
 def main():
     global current_blockchain
