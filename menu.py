@@ -27,7 +27,7 @@ def display_menu():
     # Основное меню
     table = Table(title="Меню pyChainLite", show_header=True, header_style="bold cyan")
     table.add_column("##", style="dim")
-    table.add_column("🚀 Выберите действие в pyChainLite", style="bold")
+    table.add_column("🚀 Выберите действие", style="bold")
 
     table.add_row("1", "🧱 Создать новый блокчейн")
     table.add_row("2", "📂 Загрузить блокчейн")
