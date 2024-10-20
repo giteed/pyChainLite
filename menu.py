@@ -1,12 +1,14 @@
 # menu.py
-# Меню для работы с блокчейнами в pyChainLite
+# Главное меню для управления pyChainLite
 
 from rich.console import Console
 from modules.blockchain_creation import create_blockchain
 from modules.blockchain_loading import load_blockchain
-from modules.block_listing import list_blockchains
+from modules.blockchain_listing import list_blockchains
 from modules.block_creation import create_new_block
-from modules.project_update import update_project
+from modules.update_project import update_project
+from modules.run_tests import run_tests
+from modules.menu_help import show_help
 
 console = Console()
 
@@ -16,7 +18,6 @@ def main():
     while True:
         console.print(f"\n[bold]Текущий блокчейн:[/bold] [cyan]{current_blockchain['name'] if current_blockchain else 'Блокчейн не загружен'}[/cyan]")
 
-        # Меню с вариантами действий
         console.print("""
          Меню pyChainLite         
         ┏━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -49,9 +50,13 @@ def main():
         elif choice == "2":
             blockchain_name = input("Введите имя блокчейна для загрузки: ")
             current_blockchain = load_blockchain(blockchain_name)
+            if current_blockchain:
+                console.print(f"Блокчейн '{blockchain_name}' успешно загружен.")
+            else:
+                console.print("[bold red]Ошибка: Блокчейн не найден.[/bold red]")
         
         elif choice == "3":
-            list_blockchains()
+            list_blockchains()  # Вывод списка блокчейнов
         
         elif choice == "4":
             if current_blockchain:
@@ -69,24 +74,13 @@ def main():
                 console.print("[bold red]Ошибка: Блокчейн не загружен.[/bold red]")
         
         elif choice == "6":
-            console.print("🧪 Запуск тестов...")
-            subprocess.run(['pytest'])
+            run_tests()
         
         elif choice == "7":
             update_project()
         
         elif choice == "h":
-            console.print("""
-            Описание функционала:
-            1 - Создать новый блокчейн
-            2 - Загрузить блокчейн
-            3 - Показать список блокчейнов
-            4 - Создать новый блок в текущем блокчейне
-            5 - Просмотреть блоки в текущем блокчейне
-            6 - Запустить тесты
-            7 - Обновить проект
-            Q - Выйти из программы
-            """)
+            show_help()  # Показываем справку
         
         elif choice == "q":
             console.print("Выход из программы...")
