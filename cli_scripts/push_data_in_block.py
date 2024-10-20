@@ -1,75 +1,52 @@
-# push_data_in_block.py
-# Скрипт для автоматической записи данных в блок с проверкой имени блокчейна и прав пользователя
+# cli_scripts/push_data_in_block.py
+# Скрипт для добавления данных в блок блокчейна через аргументы командной строки
 
+import argparse
 import os
 import json
-import hashlib
-import argparse
-from rich.console import Console
+import hashlib  # Не забудьте импортировать hashlib для хеширования имен блокчейнов
 from modules.blockchain_loading import load_blockchain
 from modules.block_creation import create_new_block
 
-console = Console()
+BLOCKCHAIN_DIR = "blockchains"  # Путь к папке с блокчейнами
 
-# Путь к директории с блокчейнами
-BLOCKCHAIN_DIR = "blockchains"
-
-# Функция для хеширования имени блокчейна
-def get_blockchain_hash(blockchain_name):
-    return hashlib.sha256(blockchain_name.encode()).hexdigest()
-
-# Функция для загрузки блокчейна по имени
-def load_blockchain_by_name(blockchain_name):
-    blockchain_hash = get_blockchain_hash(blockchain_name)
+def push_data_to_block(blockchain_name, user_id, data):
+    # Получаем хеш имени блокчейна на основе его имени
+    blockchain_hash = hashlib.sha256(blockchain_name.encode()).hexdigest()
     blockchain_file = f"{blockchain_hash}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
 
+    # Проверяем, существует ли блокчейн
     if not os.path.exists(blockchain_path):
-        console.print(f"[red]Ошибка: Блокчейн с именем '{blockchain_name}' не найден.[/red]")
-        return None
+        print(f"Ошибка: Блокчейн '{blockchain_name}' не найден.")
+        return
 
+    # Загружаем блокчейн
     with open(blockchain_path, 'r') as f:
         blockchain_data = json.load(f)
 
-    return blockchain_data
-
-# Функция для проверки прав доступа (проверяет, есть ли user_id в списке разрешенных пользователей)
-def check_user_permission(blockchain, user_id):
-    genesis_block = blockchain["blocks"][0]
-    owner = genesis_block["data"]["owner"]
-    if user_id == owner:
-        return True
-    # Если требуется, можно расширить проверку прав (например, с дополнительными полями для разрешений)
-    return False
-
-def main():
-    # Парсим аргументы командной строки
-    parser = argparse.ArgumentParser(description="Добавить данные в блокчейн")
-    parser.add_argument("--имя-блокчейна", required=True, help="Имя блокчейна, в который необходимо записать данные")
-    parser.add_argument("--uid", required=True, help="User ID для проверки прав доступа")
-    parser.add_argument("data", metavar="данные_для_записи", help="Данные, которые необходимо записать в блок")
-    args = parser.parse_args()
-
-    # Загрузка блокчейна по имени
-    blockchain = load_blockchain_by_name(args.имя_блокчейна)
-    if blockchain is None:
-        return  # Блокчейн не найден, выходим
-
-    # Проверка прав доступа
-    if not check_user_permission(blockchain, args.uid):
-        console.print(f"[red]Ошибка: У вас нет прав на запись в этот блокчейн.[/red]")
+    # Проверяем, есть ли у пользователя права на запись в блокчейн (простая проверка для примера)
+    if user_id != blockchain_data["blocks"][0]["data"]["owner"]:
+        print(f"Ошибка: Пользователь '{user_id}' не имеет прав на запись в этот блокчейн.")
         return
 
-    # Если права проверены, создаем новый блок
-    create_new_block(blockchain, args.data)
+    # Добавляем новый блок с переданными данными
+    create_new_block(blockchain_data, data)
 
-    # Обновляем файл блокчейна с новым блоком
-    blockchain_file = f"{get_blockchain_hash(args.имя_блокчейна)}.json"
-    blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
+    # Сохраняем обновленный блокчейн
     with open(blockchain_path, 'w') as f:
-        json.dump(blockchain, f, indent=4)
-
-    console.print(f"[green]Новый блок успешно добавлен в блокчейн '{args.имя_блокчейна}'.[/green]")
+        json.dump(blockchain_data, f, indent=4)
+    
+    print(f"Данные успешно добавлены в блокчейн '{blockchain_name}'.")
 
 if __name__ == "__main__":
-    main()
+    # Парсинг аргументов командной строки
+    parser = argparse.ArgumentParser(description="Добавить данные в блок блокчейна")
+    parser.add_argument("--blockchain-name", required=True, help="Имя блокчейна")
+    parser.add_argument("--uid", required=True, help="Идентификатор пользователя для авторизации")
+    parser.add_argument("data", help="Данные для добавления в новый блок")
+
+    args = parser.parse_args()
+
+    # Добавляем данные в блокчейн
+    push_data_to_block(args.blockchain_name, args.uid, args.data)
