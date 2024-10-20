@@ -38,27 +38,24 @@ def background_test_runner():
         console.print(f"[bold red]Ошибка при запуске тестов: {e}[/bold red]")
 
 def display_menu():
-    menu_width = 50  # Ширина меню для центрирования
-
-    # Центрирование информации о статусе тестов над меню
-    test_status = test_result_message.center(menu_width)
-    console.print(test_status)
-
-    # Центрирование информации о блокчейне над меню
-    if current_blockchain:
-        blockchain_info = f"Текущий блокчейн: {current_blockchain['blocks'][0]['data']['blockchain_name']}"
-    else:
-        blockchain_info = "Блокчейн не загружен"
-    
-    blockchain_status = blockchain_info.center(menu_width)
-    console.print(blockchain_status)
+    # Выводим статус тестов
+    console.print(test_result_message)
 
     # Основное меню
     table = Table(title="Меню pyChainLite", show_header=True, header_style="bold cyan")
     table.add_column("##", style="dim")
     table.add_column("🚀 Действие", style="bold")
 
-    table.add_row("1", "🧱 Создать новый блокчейна")
+    # Информация о текущем блокчейне
+    if current_blockchain:
+        blockchain_info = f"Текущий блокчейн: [bold green]{current_blockchain['blocks'][0]['data']['blockchain_name']}[/bold green]"
+    else:
+        blockchain_info = "[bold red]Блокчейн не загружен[/bold red]"
+
+    # Добавляем информацию о блокчейне под заголовком меню, но над самой таблицей
+    table.caption = blockchain_info
+
+    table.add_row("1", "🧱 Создать новый блокчейн")
     table.add_row("2", "📂 Загрузить блокчейн")
     table.add_row("5", "📜 Список блокчейнов")
     table.add_row("", "")  # Пустая строка для разделения секций
@@ -71,7 +68,7 @@ def display_menu():
     table.add_row("H", "❓  Описание функционала")
     table.add_row("Q", "🚪 Выйти")
 
-    # Выводим меню
+    # Выводим таблицу меню
     console.print(table)
 
 def main():
