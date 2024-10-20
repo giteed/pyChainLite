@@ -20,13 +20,18 @@ def update_project():
     if os.path.exists(blockchain_dir):
         shutil.move(blockchain_dir, backup_dir)
         console.print(f"[{get_current_time()}] Папка с блокчейнами временно перемещена в {backup_dir}.")
-    
-    # Выполняем обновление
-    subprocess.run(['chmod', '+x', './install-update.sh'], check=True)
+
+    # Переходим в корневую папку проекта для выполнения git pull
+    project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.chdir(project_dir)
+
+    # Выполняем обновление через git pull
     try:
-        subprocess.run(['./install-update.sh'], check=True)
+        result = subprocess.run(['git', 'pull', 'origin', 'main'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        console.print(result.stdout)  # Выводим результат обновления
     except subprocess.CalledProcessError as e:
-        console.print(f"[bold red]Ошибка обновления: {e}[/bold red]")
+        console.print(f"[bold red]Ошибка обновления: {e.stderr}[/bold red]")
+        return
 
     # Возвращаем папку с блокчейнами обратно в проект
     if os.path.exists(backup_dir):
