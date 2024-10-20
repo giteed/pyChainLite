@@ -11,7 +11,6 @@ from modules.block_creation import create_new_block, view_blocks
 from modules.update_project import update_project
 from modules.run_tests import run_tests
 from modules.menu_help import display_help_menu  # Ссылаемся на menu_help.py
-from modules.arg_parser import parse_arguments  # Добавили модуль для работы с аргументами командной строки
 
 console = Console()
 current_blockchain = None  # Переменная для отслеживания текущего блокчейна
@@ -55,18 +54,6 @@ def display_menu():
 def main():
     global current_blockchain
 
-    # Парсим аргументы командной строки
-    args = parse_arguments()
-    
-    # Если переданы аргументы командной строки
-    if args['data']:
-        console.print(f"Использую данные из командной строки: {args['data']}")
-        if current_blockchain:
-            create_new_block(current_blockchain, args['data'])  # Создаем блок с данными из аргументов
-        else:
-            console.print("[bold red]Сначала загрузите блокчейн для создания блока из командной строки.[/bold red]")
-        return  # После создания блока завершаем выполнение
-
     while True:
         display_menu()
         choice = input("Выберите действие (1-7, H или Q): ").strip().upper()
@@ -74,7 +61,7 @@ def main():
         if choice == '1':
             create_blockchain()
         elif choice == '2':
-            current_blockchain = load_blockchain()  # Сохраняем загруженный блокчейна
+            current_blockchain = load_blockchain()  # Сохраняем загруженный блокчейн
         elif choice == '4':
             if current_blockchain:
                 create_new_block(current_blockchain)
