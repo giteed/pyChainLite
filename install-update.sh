@@ -99,16 +99,27 @@ fi
 
 log "Установка или обновление завершены успешно."
 
-# Добавление алиаса в ~/.bashrc для команды upstart
-if ! grep -q "alias upstart=" ~/.bashrc; then
+# Проверяем алиас для команды upstart в ~/.bashrc
+if grep -q "alias upstart=" ~/.bashrc; then
+    # Если алиас существует, проверяем путь
+    current_alias=$(grep "alias upstart=" ~/.bashrc | cut -d"'" -f2)
+    expected_alias="bash $PROJECT_DIR/update-and-start.sh"
+    if [[ "$current_alias" != "$expected_alias" ]]; then
+        # Если путь отличается, заменяем алиас
+        log "Исправление алиаса upstart в ~/.bashrc..."
+        sed -i "s|alias upstart=.*|alias upstart='bash $PROJECT_DIR/update-and-start.sh'|" ~/.bashrc
+        log "Алиас upstart успешно обновлен."
+    fi
+else
+    # Если алиас не существует, добавляем его
     log "Добавляем алиас upstart в ~/.bashrc..."
     echo '# Алиас для быстрого запуска update-and-start.sh' >> ~/.bashrc
     echo "alias upstart='bash $PROJECT_DIR/update-and-start.sh'" >> ~/.bashrc
     log "Алиас upstart успешно добавлен."
-    source ~/.bashrc
-else
-    log "Алиас upstart уже существует в ~/.bashrc."
 fi
+
+# Применяем изменения в ~/.bashrc
+source ~/.bashrc
 
 # Завершение работы виртуального окружения
 log "Завершение работы виртуального окружения."
@@ -117,4 +128,3 @@ deactivate || log "Команда deactivate не найдена. Пропуск
 cd "$SCRIPT_DIR"
 
 log "Скрипт завершил работу. Лог записан в $LOG_FILE."
-
