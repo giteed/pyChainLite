@@ -1,3 +1,5 @@
+# menu.py
+# Меню pyChainLite
 from rich.console import Console
 from rich.table import Table
 import os
