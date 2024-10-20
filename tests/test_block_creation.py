@@ -1,6 +1,7 @@
 # tests/test_block_creation.py
 import os
 import json
+import hashlib
 from modules.block_creation import create_new_block
 
 BLOCKCHAIN_DIR = "blockchains"
