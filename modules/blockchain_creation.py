@@ -1,13 +1,4 @@
 # modules/blockchain_creation.py
-# Скрипт для создания нового блокчейна
-
-import hashlib
-import json
-import os
-from datetime import datetime
-
-# Путь к директории для хранения блокчейнов
-BLOCKCHAIN_DIR = "blockchains"
 
 def create_blockchain(blockchain_name, owner_name):
     """
@@ -38,6 +29,7 @@ def create_blockchain(blockchain_name, owner_name):
 
     # Создаем структуру блокчейна
     blockchain_data = {
+        "name": blockchain_name,  # Добавляем имя блокчейна в структуру данных
         "blocks": [genesis_block],
         "file": blockchain_file
     }
