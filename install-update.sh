@@ -122,8 +122,14 @@ if [ -d "$PARENT_DIR/blockchains" ]; then
     fi
 fi
 
-# Завершение работы виртуального окружения
-deactivate
+# Завершение работы виртуального окружения, если оно было активировано
+if [[ "$VIRTUAL_ENV" != "" ]]; then
+    deactivate
+else
+    log "Виртуальное окружение не было активировано, команда deactivate пропущена."
+fi
+
 cd "$SCRIPT_DIR"
 
 log "Скрипт завершил работу. Лог записан в $LOG_FILE."
+
