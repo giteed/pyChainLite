@@ -1,90 +1,103 @@
 # menu.py
-# Меню pyChainLite
+# Основное меню для управления блокчейном pyChainLite
 
 import os
+import json
+import hashlib
 from rich.console import Console
-from rich.table import Table
 from modules.blockchain_loading import load_blockchain
+from modules.block_creation import create_new_block
 from modules.blockchain_listing import list_blockchains
 from modules.blockchain_creation import create_blockchain
-from modules.block_creation import create_new_block, view_blocks
-from modules.update_project import update_project
-from modules.run_tests import run_tests
-from modules.menu_help import display_help_menu  # Ссылаемся на menu_help.py
 
 console = Console()
-current_blockchain = None  # Переменная для отслеживания текущего блокчейна
-test_result_message = "🧪 Запуск тестов... [green]OK 👍[/green]"
 
-def display_menu():
-    console.print()  # Пустая строка
-    # Выводим статус тестов
-    console.print(test_result_message)
+BLOCKCHAIN_DIR = "blockchains"
+current_blockchain = None
 
-    # Добавляем пустую строку для разделения между тестами и меню
-    console.print()
-
-    # Основное меню
-    table = Table(title="Меню pyChainLite", show_header=True, header_style="bold cyan")
-    table.add_column("##", style="dim")
-    table.add_column("🚀 Выберите действие", style="bold")
-
-    table.add_row("1", "🧱 Создать новый блокчейн")
-    table.add_row("2", "📂 Загрузить блокчейн")
-    table.add_row("3", "📜 Список блокчейнов")
-    table.add_row("", "")  # Пустая строка для разделения секций
-    table.add_row("4", "📝 Создать новый блок")
-    table.add_row("5", "🔍 Просмотреть блоки")
-    table.add_row("", "")  # Пустая строка для разделения секций
-    table.add_row("6", "🧪 Запустить тесты")
-    table.add_row("", "")  # Пустая строка для разделения секций
-    table.add_row("7", "🔄 Обновить проект")
-    table.add_row("H", "❓ Описание функционала")
-    table.add_row("", "")  # Пустая строка для разделения секций
-    table.add_row("Q", "🚪 Выйти")
-
-    console.print(table)  # Выводим таблицу меню
-
-    # Вывод информации о текущем блокчейне перед выбором действия
-    if current_blockchain:
-        console.print(f"\n[bold green]Текущий блокчейн: {current_blockchain['blocks'][0]['data']['blockchain_name']}[/bold green]")
-    else:
-        console.print("\n[bold red]Блокчейн не загружен[/bold red]")
 
 def main():
     global current_blockchain
 
     while True:
-        display_menu()
-        choice = input("Выберите действие (1-7, H или Q): ").strip().upper()
+        console.print("\n[bold]Текущий блокчейн:[/bold] [cyan]{}[/cyan]".format(current_blockchain["name"] if current_blockchain else "Блокчейн не загружен"))
+        console.print("\nВыберите действие (1-7, H или Q):")
+        console.print("1. 🧱 Создать новый блокчейн")
+        console.print("2. 📂 Загрузить блокчейн")
+        console.print("3. 📜 Список блокчейнов")
+        console.print("4. 📝 Создать новый блок")
+        console.print("5. 🔍 Просмотреть блоки")
+        console.print("6. 🧪 Запустить тесты")
+        console.print("7. 🔄 Обновить проект")
+        console.print("H. ❓ Описание функционала")
+        console.print("Q. 🚪 Выйти")
 
-        if choice == '1':
-            create_blockchain()
-        elif choice == '2':
-            current_blockchain = load_blockchain()  # Сохраняем загруженный блокчейн
-        elif choice == '4':
-            if current_blockchain:
-                create_new_block(current_blockchain)
-            else:
-                console.print("[bold red]Сначала загрузите блокчейн.[/bold red]")
-        elif choice == '5':
-            if current_blockchain:
-                view_blocks(current_blockchain)
-            else:
-                console.print("[bold red]Сначала загрузите блокчейн.[/bold red]")
-        elif choice == '3':
+        choice = input("Введите ваш выбор: ").lower()
+
+        if choice == "1":
+            blockchain_name = input("Введите имя нового блокчейна: ")
+            owner_name = input("Введите имя владельца: ")
+            current_blockchain = create_blockchain(blockchain_name, owner_name)
+        elif choice == "2":
+            blockchain_name = input("Введите имя блокчейна для загрузки: ")
+            current_blockchain = load_blockchain(blockchain_name)
+        elif choice == "3":
             list_blockchains()
-        elif choice == '6':
+        elif choice == "4":
+            if current_blockchain:
+                data = input("Введите данные для нового блока: ")
+                create_new_block(current_blockchain, data)
+            else:
+                console.print("[bold red]Ошибка:[/bold red] Блокчейн не загружен. Пожалуйста, загрузите блокчейн.")
+        elif choice == "5":
+            if current_blockchain:
+                for block in current_blockchain["blocks"]:
+                    console.print(f"Блок {block['index']}: {block}")
+            else:
+                console.print("[bold red]Ошибка:[/bold red] Блокчейн не загружен.")
+        elif choice == "6":
             run_tests()
-        elif choice == '7':
+        elif choice == "7":
             update_project()
-        elif choice == 'H':
-            display_help_menu()  # Вызов меню помощи из menu_help.py
-        elif choice == 'Q':
-            console.print("[bold green]Выход...[/bold green]")
+        elif choice == "h":
+            show_help()
+        elif choice == "q":
+            console.print("Выход...")
             break
         else:
-            console.print("[bold red]Неверный выбор. Пожалуйста, выберите действие от 1 до 7, H или Q.[/bold red]")
+            console.print("[bold red]Ошибка:[/bold red] Неверный выбор. Пожалуйста, выберите действие из списка.")
+
+
+def run_tests():
+    import subprocess
+    try:
+        console.print("🧪 Запуск тестов...")
+        subprocess.run(["pytest"], check=True)
+        console.print("🧪 Тесты завершены успешно! OK 👍")
+    except subprocess.CalledProcessError:
+        console.print("[bold red]Ошибка при запуске тестов.[/bold red]")
+
+
+def update_project():
+    import subprocess
+    try:
+        console.print("🔄 [bold cyan]Запуск обновления проекта...[/bold cyan]")
+        subprocess.run(["git", "pull"], check=True)
+        console.print("Проект успешно обновлен.")
+    except subprocess.CalledProcessError as e:
+        console.print(f"[bold red]Ошибка при обновлении проекта: {e}[/bold red]")
+
+
+def show_help():
+    console.print("Описание функционала программы:")
+    console.print("1. Создание нового блокчейна")
+    console.print("2. Загрузка существующего блокчейна")
+    console.print("3. Просмотр списка блокчейнов")
+    console.print("4. Добавление нового блока в блокчейн")
+    console.print("5. Просмотр блоков в загруженном блокчейне")
+    console.print("6. Запуск тестов для проверки функциональности")
+    console.print("7. Обновление проекта с GitHub")
+
 
 if __name__ == "__main__":
     main()
