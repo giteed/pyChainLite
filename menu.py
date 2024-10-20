@@ -22,7 +22,7 @@ current_blockchain = None  # Переменная для хранения тек
 # Основное меню
 def display_menu():
     table = Table(title="Меню pyChainLite", show_header=True, header_style="bold cyan")
-    table.add_column("Номер", style="dim")
+    table.add_column("##", style="dim")
     table.add_column("Действие", style="bold")
 
     # Работа с блокчейнами
