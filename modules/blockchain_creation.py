@@ -1,40 +1,41 @@
-# modules/block_creation.py
-# Модуль для создания блоков и просмотра блоков в текущем блокчейне
+# modules/blockchain_creation.py
+# Модуль для создания блокчейна
 
 import os
 import json
-from rich.console import Console
-from src.blockchain import Block
-from datetime import datetime
-
-console = Console()
+import hashlib
 
 BLOCKCHAIN_DIR = "blockchains"
 
-def create_new_block(current_blockchain, data, user_id=None):
+def create_blockchain():
     """
-    Создание нового блока в загруженном блокчейне.
+    Создание нового блокчейна.
     """
-    last_block = current_blockchain["blocks"][-1]
-    new_block = Block(
-        index=last_block["index"] + 1,
-        data={
-            "data": data,
-            "added_by": user_id,  # Пометка, кто добавил блок
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # Время добавления блока
-        },
-        previous_hash=last_block["hash"]
-    )
+    blockchain_name = input("Введите имя для нового блокчейна: ").strip()
+    owner = input("Введите имя владельца: ").strip()
+    owner_password = input("Введите пароль для владельца: ").strip()
 
-    current_blockchain["blocks"].append(new_block.__dict__)
+    # Создание структуры блокчейна
+    blockchain_data = {
+        "blocks": [{
+            "index": 0,
+            "data": {
+                "blockchain_name": blockchain_name,
+                "owner": owner,
+                "owner_password_hash": hashlib.sha256(owner_password.encode()).hexdigest()
+            },
+            "previous_hash": "0" * 64,
+            "hash": hashlib.sha256(blockchain_name.encode()).hexdigest()
+        }]
+    }
 
-    blockchain_file = current_blockchain["file"]
+    blockchain_file = f"{hashlib.sha256(blockchain_name.encode()).hexdigest()}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
-    
-    # Сохраняем новый блок в файл блокчейна
+
+    os.makedirs(BLOCKCHAIN_DIR, exist_ok=True)
+
+    # Сохранение блокчейна в файл
     with open(blockchain_path, 'w') as f:
-        json.dump(current_blockchain, f, indent=4)
-    
-    console.print(f"[green]Новый блок успешно добавлен в блокчейн {current_blockchain['blocks'][0]['data']['blockchain_name']}.[/green]")
-    
-    return new_block  # Возвращаем созданный блок для дальнейшего использования
+        json.dump(blockchain_data, f, indent=4)
+
+    print(f"Блокчейн '{blockchain_name}' успешно создан и сохранен.")
