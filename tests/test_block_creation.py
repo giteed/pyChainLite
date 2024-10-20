@@ -1,7 +1,9 @@
+# tests/test_block_creation.py
+
 import os
 import json
 import hashlib
-from modules.block_creation import create_new_block  # Импорт функции для создания блока
+from modules.block_creation import create_new_block
 
 BLOCKCHAIN_DIR = "blockchains"
 
@@ -10,7 +12,7 @@ def test_create_new_block(monkeypatch):
     blockchain_name = "test_block_creation"
     blockchain_file = f"{hashlib.sha256(blockchain_name.encode()).hexdigest()}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
-    
+
     blockchain_data = {
         "blocks": [{
             "index": 0,
@@ -26,7 +28,7 @@ def test_create_new_block(monkeypatch):
 
     # Создание папки для блокчейнов, если её нет
     os.makedirs(BLOCKCHAIN_DIR, exist_ok=True)
-    
+
     # Сохраняем тестовый блокчейн в файл
     with open(blockchain_path, 'w') as f:
         json.dump(blockchain_data, f, indent=4)
@@ -36,11 +38,9 @@ def test_create_new_block(monkeypatch):
     monkeypatch.setattr('builtins.input', lambda _: next(inputs))
 
     # Загружаем блокчейн и создаем новый блок
-    create_new_block(blockchain_data)
+    new_block_data = "new block data"
+    create_new_block(blockchain_data, new_block_data)
 
-    # Проверяем, что блок был добавлен
+    # Проверка, что блок добавлен в блокчейн
     assert len(blockchain_data["blocks"]) == 2
-    assert blockchain_data["blocks"][1]["data"] == "new block data"
-
-    # Удаляем тестовые данные
-    os.remove(blockchain_path)
+    assert blockchain_data["blocks"][-1]["data"] == new_block_data
