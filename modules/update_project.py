@@ -33,6 +33,7 @@ def update_project():
             subprocess.run(['git', 'stash'], check=True)
         else:
             console.print("[bold yellow]Отмена обновления.[/bold yellow]")
+            restart_menu()  # Добавляем перезапуск меню после отмены
             return
 
     # Выполняем обновление
