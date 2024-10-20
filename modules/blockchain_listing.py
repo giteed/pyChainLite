@@ -11,6 +11,17 @@ console = Console()
 # Папка для хранения блокчейнов
 BLOCKCHAIN_DIR = "blockchains"
 
+def format_size(size_in_bytes):
+    """
+    Форматирует размер файла:
+    - Если меньше 1 KB, выводит в байтах.
+    - Если больше 1 KB, выводит в КБ с округлением до двух знаков.
+    """
+    if size_in_bytes < 1024:
+        return f"{size_in_bytes} B"
+    else:
+        return f"{size_in_bytes / 1024:.2f} KB"
+
 def list_blockchains():
     if not os.path.exists(BLOCKCHAIN_DIR):
         console.print("[red]Папка с блокчейнами не найдена.[/red]")
@@ -47,7 +58,7 @@ def list_blockchains():
         table.add_row(
             blockchain[0], 
             str(blockchain[1]), 
-            f"{blockchain[2] // 1024} KB",  # Размер в КБ
+            format_size(blockchain[2]),  # Форматируем размер
             blockchain[3], 
             blockchain[4], 
             blockchain[5]
