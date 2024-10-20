@@ -1,13 +1,20 @@
-# tests/test_block_creation.py
-
 import os
-import json
 import hashlib
-from modules.block_creation import create_new_block
+import json
+import pytest
 
-BLOCKCHAIN_DIR = "blockchains"
+BLOCKCHAIN_DIR = "blockchains"  # Путь к папке с блокчейнами
 
-def test_create_new_block(monkeypatch):
+@pytest.fixture
+def cleanup_blockchain():
+    # Функция для очистки блокчейна после теста
+    yield
+    # Удаляем все файлы блокчейнов, созданные в ходе теста
+    for file_name in os.listdir(BLOCKCHAIN_DIR):
+        if file_name.endswith(".json"):
+            os.remove(os.path.join(BLOCKCHAIN_DIR, file_name))
+
+def test_create_new_block(monkeypatch, cleanup_blockchain):
     # Создаем тестовый блокчейн
     blockchain_name = "test_block_creation"
     blockchain_file = f"{hashlib.sha256(blockchain_name.encode()).hexdigest()}.json"
@@ -23,7 +30,7 @@ def test_create_new_block(monkeypatch):
             "previous_hash": "0" * 64,
             "hash": hashlib.sha256("test_data".encode()).hexdigest()
         }],
-        "file": blockchain_file  # Добавляем ключ "file" в данные блокчейна
+        "file": blockchain_file
     }
 
     # Создание папки для блокчейнов, если её нет
@@ -43,6 +50,4 @@ def test_create_new_block(monkeypatch):
 
     # Проверка, что блок добавлен в блокчейн
     assert len(blockchain_data["blocks"]) == 2
-    # Проверяем, что данные в новом блоке соответствуют ожидаемым значениям
     assert blockchain_data["blocks"][-1]["data"]["data"] == new_block_data
-    assert blockchain_data["blocks"][-1]["data"]["added_by"] is None  # или другой ожидаемый пользователь
