@@ -40,52 +40,23 @@ if ! command -v git &> /dev/null; then
     exit 1
 fi
 
-# Если проекта нет или часть файлов отсутствует, клонируем репозиторий заново
-if [ ! -d "$PROJECT_DIR/.git" ] || [ ! -f "$PROJECT_DIR/create_dirs.sh" ]; then
-    # Добавляем проверку на отсутствие ключевых файлов
-    if [ -f "$PROJECT_DIR/requirements.txt" ] && [ -d "$PROJECT_DIR/venv" ]; then
-        echo "Проект уже установлен, но git-репозиторий отсутствует."
-        init_logging
-    else
-        echo "Часть файлов проекта отсутствует или проект не является git-репозиторием."
-        read -p "Вы хотите клонировать проект заново и заменить текущие файлы? (y/n): " confirm
-        if [ "$confirm" != "y" ]; then
-            echo "Операция клонирования отменена пользователем."
-            exit 1
-        fi
-
-        # Клонируем репозиторий заново
-        git clone https://github.com/giteed/pyChainLite.git "$PROJECT_DIR" || { echo "Ошибка клонирования репозитория."; exit 1; }
-
-        echo "Клонирование завершено успешно."
-        init_logging
-    fi
-else
-    # Если проект уже существует, обновляем его
+# Если папка pyChainLite уже существует, обновляем проект
+if [ -d "$PROJECT_DIR/.git" ]; then
     cd "$PROJECT_DIR" || { echo "Ошибка: не удается зайти в директорию проекта."; exit 1; }
-    echo "Проект уже существует, выполняется обновление..."
-    
-    # Сброс локальных изменений
-    git reset --hard HEAD || { echo "Ошибка при сбросе изменений."; exit 1; }
-
-    # Обновление репозитория
-    git pull origin main || { echo "Ошибка при обновлении репозитория."; exit 1; }
-
-    echo "Обновление завершено."
+    echo "Обновление существующего проекта..."
+    git pull origin main || { echo "Ошибка при обновлении проекта. Проверьте наличие конфликтов."; exit 1; }
+    echo "Проект успешно обновлен."
+    init_logging
+else
+    # Если проект отсутствует, клонируем репозиторий
+    echo "Клонирование проекта в текущую директорию..."
+    git clone https://github.com/giteed/pyChainLite.git "$PROJECT_DIR" || { echo "Ошибка клонирования репозитория."; exit 1; }
+    echo "Клонирование завершено успешно."
     init_logging
 fi
 
-# Переходим в папку проекта перед запуском создания директорий
+# Переходим в папку проекта перед установкой
 cd "$PROJECT_DIR" || { log "Ошибка: не удалось зайти в директорию проекта."; exit 1; }
-
-# Запуск скрипта для создания папок src и tests
-if [ -f "$PROJECT_DIR/create_dirs.sh" ]; then
-    log "Проверка и создание необходимых директорий..."
-    chmod +x "$PROJECT_DIR/create_dirs.sh"
-    "$PROJECT_DIR/create_dirs.sh"
-else
-    log "Скрипт create_dirs.sh не найден."
-fi
 
 # Установка прав на выполнение для start.sh и update-and-start.sh
 log "Установка прав на выполнение для start.sh и update-and-start.sh..."
