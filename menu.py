@@ -86,7 +86,9 @@ def main():
             update_project()
         elif choice == 'H':
             display_help_menu()  # Вызов меню помощи
-            console.clear()  # Очищаем экран после выхода из меню помощи
+            console.print("\nНажмите Enter для возврата в основное меню...")
+            input()  # Ожидаем нажатия Enter перед возвратом в основное меню
+            console.clear()  # Очищаем экран перед возвратом в основное меню
         elif choice == 'Q':
             console.print("[bold green]Выход...[/bold green]")
             break
