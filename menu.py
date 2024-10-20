@@ -73,12 +73,12 @@ def main():
                 create_new_block(current_blockchain)
             else:
                 console.print("[bold red]Сначала загрузите блокчейн.[/bold red]")
-        elif choice == '5':
+        elif choice == '3':
             if current_blockchain:
                 view_blocks(current_blockchain)
             else:
                 console.print("[bold red]Сначала загрузите блокчейн.[/bold red]")
-        elif choice == '3':
+        elif choice == '5':
             list_blockchains()
         elif choice == '6':
             run_tests()
@@ -86,6 +86,7 @@ def main():
             update_project()
         elif choice == 'H':
             display_help_menu()  # Вызов меню помощи
+            console.clear()  # Очищаем экран после выхода из меню помощи
         elif choice == 'Q':
             console.print("[bold green]Выход...[/bold green]")
             break
