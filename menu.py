@@ -41,19 +41,19 @@ def display_menu():
     # Выводим статус тестов
     console.print(test_result_message)
 
-    # Основное меню
-    table = Table(title="Меню pyChainLite", show_header=True, header_style="bold cyan")
-    table.add_column("##", style="dim")
-    table.add_column("🚀 Действие", style="bold")
-
     # Информация о текущем блокчейне
     if current_blockchain:
         blockchain_info = f"Текущий блокчейн: [bold green]{current_blockchain['blocks'][0]['data']['blockchain_name']}[/bold green]"
     else:
         blockchain_info = "[bold red]Блокчейн не загружен[/bold red]"
 
-    # Добавляем информацию о блокчейне под заголовком меню, но над самой таблицей
-    table.caption = blockchain_info
+    # Выводим информацию о блокчейне перед таблицей
+    console.print(blockchain_info)
+
+    # Основное меню
+    table = Table(title="Меню pyChainLite", show_header=True, header_style="bold cyan")
+    table.add_column("##", style="dim")
+    table.add_column("🚀 Действие", style="bold")
 
     table.add_row("1", "🧱 Создать новый блокчейн")
     table.add_row("2", "📂 Загрузить блокчейн")
