@@ -1,5 +1,5 @@
 # modules/block_creation.py
-# Модуль для создания блоков и просмотра блоков в текущем блокчейне
+# Модуль для создания блоков и просмотра блоков в текущем блокчейне, включая поддержку данных через аргументы командной строки
 
 import os
 import json
@@ -10,11 +10,14 @@ console = Console()
 
 BLOCKCHAIN_DIR = "blockchains"
 
-def create_new_block(current_blockchain):
+def create_new_block(current_blockchain, data=None):
     """
     Создание нового блока в загруженном блокчейне.
+    Аргумент `data` может быть передан извне или введен интерактивно.
     """
-    data = input("Введите данные для нового блока: ").strip()
+    if data is None:
+        data = input("Введите данные для нового блока: ").strip()
+    
     last_block = current_blockchain["blocks"][-1]
     new_block = Block(
         index=last_block["index"] + 1,
@@ -45,3 +48,4 @@ def view_blocks(current_blockchain):
     
     for block in current_blockchain["blocks"]:
         console.print(f"Block(index: {block['index']}, data: {block['data']}, hash: {block['hash']})")
+
