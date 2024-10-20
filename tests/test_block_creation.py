@@ -43,4 +43,6 @@ def test_create_new_block(monkeypatch):
 
     # Проверка, что блок добавлен в блокчейн
     assert len(blockchain_data["blocks"]) == 2
-    assert blockchain_data["blocks"][-1]["data"] == new_block_data
+    # Проверяем, что данные в новом блоке соответствуют ожидаемым значениям
+    assert blockchain_data["blocks"][-1]["data"]["data"] == new_block_data
+    assert blockchain_data["blocks"][-1]["data"]["added_by"] is None  # или другой ожидаемый пользователь
