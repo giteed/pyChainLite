@@ -1,79 +1,51 @@
 # menu.py
 # Меню pyChainLite
-from rich.console import Console
-from rich.table import Table
 import os
 import subprocess
-import shutil
+import json
+from rich.console import Console
+from rich.table import Table
+
+from modules.blockchain_creation import create_blockchain
+from modules.blockchain_loading import load_blockchain
+from modules.block_creation import create_new_block
+from modules.blockchain_listing import list_blockchains
+from modules.block_viewer import view_blocks
+from modules.update_project import update_project
+from modules.run_tests import run_tests
 
 console = Console()
 
-# Функция для создания и отображения меню
+# Основное меню
 def display_menu():
-    table = Table(title="Меню pyChainLite", show_header=False, header_style="bold cyan")
+    table = Table(title="Меню pyChainLite", show_header=True, header_style="bold cyan")
+    table.add_column("Номер", style="dim")
+    table.add_column("Действие", style="bold")
     
-    # Блок 1 - Блокчейны
-    table.add_row("[bold]Блокчейны:[/bold]")
+    # Блок 1: Блокчейны
     table.add_row("1", "🧱 Создать новый блокчейн")
-    table.add_row("2", "📂 Загрузить блокчейн")
-
-    # Блок 2 - Блоки
-    table.add_row("")
-    table.add_row("[bold]Блоки:[/bold]")
+    table.add_row("2", "📂 Загрузить блокчейны")
+    
+    # Блок 2: Блоки
     table.add_row("3", "📝 Создать новый блок")
     table.add_row("4", "🔍 Просмотреть блоки")
 
-    # Блок 3 - Тестирование
-    table.add_row("")
-    table.add_row("[bold]Тестирование:[/bold]")
+    # Блок 3: Тесты
     table.add_row("5", "🧪 Запустить тесты")
 
-    # Блок 4 - Обновление проекта
-    table.add_row("")
-    table.add_row("[bold]Обновление:[/bold]")
+    # Блок 4: Обновление
     table.add_row("6", "🔄 Обновить проект")
 
-    # Блок 5 - Выход
-    table.add_row("")
-    table.add_row("q", "🚪 Выйти")
+    # Выход
+    table.add_row("Q", "🚪 Выйти")
 
     console.print(table)
-
-# Функция для создания нового блокчейна (пока только заглушка)
-def create_blockchain():
-    console.print("🧱 [bold green]Создание нового блокчейна...[/bold green]")
-    # Логика создания блокчейна здесь
-
-# Функция для загрузки существующего блокчейна (пока только заглушка)
-def load_blockchain():
-    console.print("📂 [bold green]Загрузка блокчейна...[/bold green]")
-    # Логика загрузки блокчейна здесь
-
-# Функция для создания нового блока (пока только заглушка)
-def create_new_block():
-    console.print("📝 [bold green]Создание нового блока...[/bold green]")
-    # Логика создания нового блока здесь
-
-# Функция для просмотра блоков (пока только заглушка)
-def view_blocks():
-    console.print("🔍 [bold green]Просмотр блоков...[/bold green]")
-    # Логика просмотра блоков здесь
-
-# Функция для запуска тестов (пока только заглушка)
-def run_tests():
-    console.print("🧪 [bold green]Запуск тестов...[/bold green]")
-    # Логика запуска тестов здесь
-
-# Функция для обновления проекта (пока только заглушка)
-def update_project():
-    console.print("🔄 [bold cyan]Запуск обновления проекта...[/bold cyan]")
-    # Логика обновления проекта здесь
 
 # Основной цикл программы
 def main():
     while True:
         display_menu()
-        choice = input("Выберите действие (1-6 или q для выхода): ").strip().lower()
+        choice = input("Выберите действие (1-6 или Q): ").strip().lower()
         
         if choice == '1':
             create_blockchain()
@@ -91,7 +63,7 @@ def main():
             console.print("[bold green]Выход...[/bold green]")
             break
         else:
-            console.print("[bold red]Неверный выбор. Пожалуйста, выберите действие от 1 до 6 или q для выхода.[/bold red]")
+            console.print("[bold red]Неверный выбор. Пожалуйста, выберите действие от 1 до 6 или Q для выхода.[/bold red]")
 
 if __name__ == "__main__":
     main()
