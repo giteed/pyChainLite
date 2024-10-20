@@ -7,7 +7,7 @@ def update_project():
     try:
         # Выполняем команду git pull
         subprocess.run(["git", "pull"], check=True)
-        print("Проект успешно обновлён.")
+        print("Проект успешно обновлён!")
     except subprocess.CalledProcessError as e:
         print(f"Ошибка при обновлении проекта: {e}")
 
