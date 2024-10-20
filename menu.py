@@ -17,6 +17,7 @@ current_blockchain = None  # Переменная для отслеживани�
 test_result_message = "🧪 Запуск тестов... [green]OK 👍[/green]"
 
 def display_menu():
+    console.print()  # Пустая строка
     # Выводим статус тестов
     console.print(test_result_message)
 
