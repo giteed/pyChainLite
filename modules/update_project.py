@@ -48,7 +48,12 @@ def update_project():
     stash_result = subprocess.run(['git', 'stash', 'list'], stdout=subprocess.PIPE)
     if stash_result.stdout:
         console.print("Возвращение ваших изменений...")
-        subprocess.run(['git', 'stash', 'pop'], check=True)
+
+        try:
+            subprocess.run(['git', 'stash', 'pop'], check=True)
+        except subprocess.CalledProcessError as e:
+            console.print(f"[bold red]Ошибка при восстановлении изменений: {e}. Конфликт в файлах. Пожалуйста, решите конфликт вручную.[/bold red]")
+            return
 
     # Возвращаем папку с блокчейнами обратно в проект
     if os.path.exists(backup_dir):
