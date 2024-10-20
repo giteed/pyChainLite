@@ -22,7 +22,7 @@ def background_test_runner():
     global test_result_message
     try:
         # Запускаем тесты, подавляя их вывод
-        result = subprocess.run(['pytest'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        result = subprocess.run(['pytest'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         if result.returncode == 0:
             # Если тесты прошли успешно
             test_result_message = "[green]🧪 Запуск тестов... OK 👍[/green]"
