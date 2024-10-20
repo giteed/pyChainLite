@@ -68,12 +68,12 @@ def main():
             create_blockchain()
         elif choice == '2':
             current_blockchain = load_blockchain()  # Сохраняем загруженный блокчейн
-        elif choice == '3':
+        elif choice == '4':
             if current_blockchain:
                 create_new_block(current_blockchain)
             else:
                 console.print("[bold red]Сначала загрузите блокчейн.[/bold red]")
-        elif choice == '4':
+        elif choice == '3':
             if current_blockchain:
                 view_blocks(current_blockchain)
             else:
