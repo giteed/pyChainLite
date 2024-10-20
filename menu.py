@@ -26,10 +26,10 @@ def background_test_runner():
         result = subprocess.run(['pytest'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         if result.returncode == 0:
             # Если тесты прошли успешно
-            test_result_message = "[green]🧪 Запуск тестов... OK 👍[/green]"
+            test_result_message = "🧪 Запуск тестов... [green]OK 👍[/green]"
         else:
             # Если есть ошибки, выводим их перед меню
-            test_result_message = "[bold red]🧪 Запуск тестов... Ошибка ❌[/bold red]"
+            test_result_message = "🧪 Запуск тестов... [bold red]Ошибка ❌[/bold red]"
             console.print(f"[bold red]Обнаружены ошибки при тестировании:[/bold red]\n{result.stdout}")
             console.print("Нажмите Enter для продолжения...")
             input()
