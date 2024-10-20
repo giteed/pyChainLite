@@ -21,13 +21,33 @@ def update_project():
         shutil.move(blockchain_dir, backup_dir)
         console.print(f"[{get_current_time()}] Папка с блокчейнами временно перемещена в {backup_dir}.")
     
+    # Проверка на наличие локальных изменений
+    result = subprocess.run(['git', 'status', '--porcelain'], stdout=subprocess.PIPE)
+    if result.stdout:
+        console.print("[bold red]Внимание: У вас есть локальные изменения.[/bold red]")
+        console.print("Вы хотите спрятать их и продолжить обновление? (y/n)")
+        choice = input().lower()
+        if choice == 'y':
+            # Спрятать локальные изменения
+            console.print("Сохранение ваших локальных изменений...")
+            subprocess.run(['git', 'stash'], check=True)
+        else:
+            console.print("[bold yellow]Отмена обновления.[/bold yellow]")
+            return
+
     # Выполняем обновление
     subprocess.run(['chmod', '+x', './install-update.sh'], check=True)
     try:
-        result = subprocess.run(['git', 'pull', 'origin', 'main'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-        console.print(f"[bold green]Результат обновления:[/bold green]\n{result.stdout}")
+        result = subprocess.run(['git', 'pull', 'origin', 'main'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        console.print(result.stdout.decode())
     except subprocess.CalledProcessError as e:
-        console.print(f"[bold red]Ошибка обновления: {e.stderr}[/bold red]")
+        console.print(f"[bold red]Ошибка обновления: {e}[/bold red]")
+    
+    # Возвращаем изменения из stash, если они были спрятаны
+    stash_result = subprocess.run(['git', 'stash', 'list'], stdout=subprocess.PIPE)
+    if stash_result.stdout:
+        console.print("Возвращение ваших изменений...")
+        subprocess.run(['git', 'stash', 'pop'], check=True)
 
     # Возвращаем папку с блокчейнами обратно в проект
     if os.path.exists(backup_dir):
