@@ -14,59 +14,72 @@ from modules.help_menu import display_help_menu
 
 console = Console()
 current_blockchain = None  # Переменная для отслеживания текущего блокчейна
+test_result_message = "🧪 Запуск тестов... [green]OK 👍[/green]"
 
 def display_menu():
+    console.print()  # Пустая строка
+    # Выводим статус тестов
+    console.print(test_result_message)
+
+    # Добавляем пустую строку для разделения между тестами и меню
+    console.print()
+
     # Основное меню
     table = Table(title="Меню pyChainLite", show_header=True, header_style="bold cyan")
     table.add_column("##", style="dim")
     table.add_column("🚀 Действие", style="bold")
-    
+
     table.add_row("1", "🧱 Создать новый блокчейн")
     table.add_row("2", "📂 Загрузить блокчейн")
-    table.add_row("3", "📜 Список блокчейнов")
+    table.add_row("5", "📜 Список блокчейнов")
     table.add_row("", "")  # Пустая строка для разделения секций
-    table.add_row("4", "📝 Создать новый блок")
-    table.add_row("5", "🔍 Просмотреть блоки")
+    table.add_row("3", "📝 Создать новый блок")
+    table.add_row("4", "🔍 Просмотреть блоки")
     table.add_row("", "")  # Пустая строка для разделения секций
     table.add_row("6", "🧪 Запустить тесты")
     table.add_row("", "")  # Пустая строка для разделения секций
     table.add_row("7", "🔄 Обновить проект")
     table.add_row("H", "❓  Описание функционала")
     table.add_row("Q", "🚪 Выйти")
-    
-    console.print(table)
 
-    # Выводим информацию о блокчейне под таблицей
+    # Определяем ширину таблицы на основе максимальной длины строк
+    table_width = max(len(action) for _, action in [("1", "🧱 Создать новый блокчейн"), ("2", "📂 Загрузить блокчейн"),
+                                                    ("5", "📜 Список блокчейнов"), ("3", "📝 Создать новый блок"),
+                                                    ("4", "🔍 Просмотреть блоки"), ("6", "🧪 Запустить тесты"),
+                                                    ("7", "🔄 Обновить проект"), ("H", "❓  Описание функционала"),
+                                                    ("Q", "🚪 Выйти")]) + 10  # Задаем ширину с запасом
+
+    console.print(table)  # Выводим таблицу меню
+
+    # Вывод информации о текущем блокчейне перед выбором действия
     if current_blockchain:
-        console.print(f"[bold green]Текущий блокчейн: {current_blockchain['blocks'][0]['data']['blockchain_name']}[/bold green]")
+        console.print(f"\n[bold green]Текущий блокчейн: {current_blockchain['blocks'][0]['data']['blockchain_name']}[/bold green]")
     else:
-        console.print("[bold red]Блокчейн не загружен[/bold red]")
+        console.print("\n[bold red]Блокчейн не загружен[/bold red]")
 
 def main():
     global current_blockchain
 
     while True:
-        console.print("")  # Пустая строка для разделения
-        display_menu()  # Отображаем меню
-        
+        display_menu()
         choice = input("Выберите действие (1-7, H или Q): ").strip().upper()
-        
+
         if choice == '1':
             create_blockchain()
         elif choice == '2':
             current_blockchain = load_blockchain()  # Сохраняем загруженный блокчейн
         elif choice == '3':
-            list_blockchains()
-        elif choice == '4':
             if current_blockchain:
                 create_new_block(current_blockchain)
             else:
                 console.print("[bold red]Сначала загрузите блокчейн.[/bold red]")
-        elif choice == '5':
+        elif choice == '4':
             if current_blockchain:
                 view_blocks(current_blockchain)
             else:
                 console.print("[bold red]Сначала загрузите блокчейн.[/bold red]")
+        elif choice == '5':
+            list_blockchains()
         elif choice == '6':
             run_tests()
         elif choice == '7':
