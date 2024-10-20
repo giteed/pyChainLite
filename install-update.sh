@@ -117,3 +117,4 @@ deactivate || log "Команда deactivate не найдена. Пропуск
 cd "$SCRIPT_DIR"
 
 log "Скрипт завершил работу. Лог записан в $LOG_FILE."
+
