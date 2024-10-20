@@ -4,7 +4,7 @@
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
 # Определяем пути для папок проекта и логов
-PROJECT_DIR="$SCRIPT_DIR"
+PROJECT_DIR="$SCRIPT_DIR/pyChainLite"  # Папка pyChainLite внутри текущей директории
 LOG_DIR="$PROJECT_DIR/logs"
 LOG_FILE="$LOG_DIR/install-update.log"
 
@@ -20,7 +20,7 @@ if [ ! -d "$LOG_DIR" ]; then
 fi
 
 # Создаем файл лога, если он не существует
-if [ ! -f "$LOG_FILE" ];then
+if [ ! -f "$LOG_FILE" ]; then
     log "Создание файла лога..."
     touch "$LOG_FILE" || { log "Ошибка создания файла лога."; exit 1; }
 fi
@@ -54,16 +54,16 @@ if [ ! -d "$PROJECT_DIR/.git" ] || [ ! -f "$PROJECT_DIR/create_dirs.sh" ]; then
 
     log "Клонирую заново..."
 
-    # Проверяем, существует ли директория проекта
+    # Проверяем, существует ли директория проекта (именно pyChainLite)
     if [ -d "$PROJECT_DIR" ]; then
-        log "Проект уже существует, но неполный."
-        read -p "Вы хотите удалить текущую папку проекта и клонировать заново? (y/n): " confirm_delete
+        log "Проект pyChainLite уже существует, но неполный."
+        read -p "Вы хотите удалить текущую папку проекта pyChainLite и клонировать заново? (y/n): " confirm_delete
         if [ "$confirm_delete" != "y" ]; then
-            log "Операция отменена. Рекомендуется вручную удалить текущие файлы и повторить запуск скрипта."
+            log "Операция отменена. Рекомендуется вручную удалить папку pyChainLite и повторить запуск скрипта."
             exit 1
         fi
-        log "Удаление текущей папки проекта..."
-        rm -rf "$PROJECT_DIR" || { log "Ошибка при удалении текущей папки проекта."; exit 1; }
+        log "Удаление текущей папки pyChainLite..."
+        rm -rf "$PROJECT_DIR" || { log "Ошибка при удалении текущей папки pyChainLite."; exit 1; }
     fi
 
     git clone https://github.com/giteed/pyChainLite.git "$PROJECT_DIR" || { log "Ошибка клонирования репозитория."; exit 1; }
@@ -97,7 +97,7 @@ chmod +x "$PROJECT_DIR/update-and-start.sh" || { log "Ошибка при уст
 # Создаем виртуальное окружение, если оно не создано
 if [ ! -d "$PROJECT_DIR/venv" ]; then
     log "Создание виртуального окружения..."
-    python3 -m venv venv || { log "Ошибка создания виртуального окружения."; exit 1; }
+    python3 -m venv "$PROJECT_DIR/venv" || { log "Ошибка создания виртуального окружения."; exit 1; }
 else
     log "Виртуальное окружение уже существует."
 fi
