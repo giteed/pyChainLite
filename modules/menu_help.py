@@ -11,6 +11,7 @@ HELP_DIR = "docs/menu_help"  # Указали 'docs' вместо 'doc'
 
 def display_help_menu():
     while True:  # Добавляем цикл, чтобы повторять меню помощи
+        console.print()  # Пустая строка
         table = Table(title="ℹ️  Описание функционала", show_header=True, header_style="bold yellow")
         table.add_column("##", style="dim")
         table.add_column("❓Описание", style="bold")
