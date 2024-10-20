@@ -20,19 +20,30 @@ def main():
     global current_blockchain
 
     while True:
-        console.print("\n[bold]Текущий блокчейн:[/bold] [cyan]{}[/cyan]".format(current_blockchain["name"] if current_blockchain else "Блокчейн не загружен"))
-        console.print("\nВыберите действие (1-7, H или Q):")
-        console.print("1. 🧱 Создать новый блокчейн")
-        console.print("2. 📂 Загрузить блокчейн")
-        console.print("3. 📜 Список блокчейнов")
-        console.print("4. 📝 Создать новый блок")
-        console.print("5. 🔍 Просмотреть блоки")
-        console.print("6. 🧪 Запустить тесты")
-        console.print("7. 🔄 Обновить проект")
-        console.print("H. ❓ Описание функционала")
-        console.print("Q. 🚪 Выйти")
+        console.print(f"\n[bold]Текущий блокчейн:[/bold] [cyan]{current_blockchain['name'] if current_blockchain else 'Блокчейн не загружен'}[/cyan]")
+        
+        console.print(
+            "\n         [bold]Меню pyChainLite[/bold]         \n"
+            "┏━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"
+            "┃ ## ┃ 🚀 Выберите действие      ┃\n"
+            "┡━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n"
+            "│ 1  │ 🧱 Создать новый блокчейн │\n"
+            "│ 2  │ 📂 Загрузить блокчейн     │\n"
+            "│ 3  │ 📜 Список блокчейнов      │\n"
+            "│    │                           │\n"
+            "│ 4  │ 📝 Создать новый блок     │\n"
+            "│ 5  │ 🔍 Просмотреть блоки      │\n"
+            "│    │                           │\n"
+            "│ 6  │ 🧪 Запустить тесты        │\n"
+            "│    │                           │\n"
+            "│ 7  │ 🔄 Обновить проект        │\n"
+            "│ H  │ ❓ Описание функционала   │\n"
+            "│    │                           │\n"
+            "│ Q  │ 🚪 Выйти                  │\n"
+            "└────┴───────────────────────────┘"
+        )
 
-        choice = input("Введите ваш выбор: ").lower()
+        choice = input("\nВведите ваш выбор: ").lower()
 
         if choice == "1":
             blockchain_name = input("Введите имя нового блокчейна: ")
