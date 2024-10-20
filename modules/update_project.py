@@ -1,48 +1,56 @@
 # modules/update_project.py
-# Модуль для обновления проекта и перезапуска меню
+# Модуль для обновления проекта pyChainLite
 
 import os
 import subprocess
 import shutil
+from rich.console import Console
 
-BLOCKCHAIN_DIR = "blockchains"
+console = Console()
 
+# Функция для обновления проекта
 def update_project():
-    """
-    Функция для обновления проекта.
-    """
-    print("🔄 [bold cyan]Запуск обновления проекта...[/bold cyan]")
-    
-    # Устанавливаем права на выполнение для скрипта установки и обновления
-    subprocess.run(['chmod', '+x', './install-update.sh'], check=True)
-    
-    # Перемещаем папку блокчейнов в родительский каталог для сохранности
-    if os.path.exists(BLOCKCHAIN_DIR):
-        parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
-        backup_blockchain_dir = os.path.join(parent_dir, BLOCKCHAIN_DIR)
-        shutil.move(BLOCKCHAIN_DIR, backup_blockchain_dir)
-        print(f"[2024-10-20] Папка с блокчейнами временно перемещена в {backup_blockchain_dir}.")
+    console.print("🔄 [bold cyan]Запуск обновления проекта...[/bold cyan]")
 
-    # Запускаем скрипт обновления
-    subprocess.run(['./install-update.sh'], check=True)
+    # Перемещаем папку с блокчейнами в родительский каталог
+    blockchain_dir = os.path.join(os.getcwd(), "blockchains")
+    parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
+    backup_dir = os.path.join(parent_dir, "blockchains")
+
+    if os.path.exists(blockchain_dir):
+        shutil.move(blockchain_dir, backup_dir)
+        console.print(f"[{get_current_time()}] Папка с блокчейнами временно перемещена в {backup_dir}.")
+    
+    # Выполняем обновление
+    subprocess.run(['chmod', '+x', './install-update.sh'], check=True)
+    try:
+        subprocess.run(['./install-update.sh'], check=True)
+    except subprocess.CalledProcessError as e:
+        console.print(f"[bold red]Ошибка обновления: {e}[/bold red]")
 
     # Возвращаем папку с блокчейнами обратно в проект
-    if os.path.exists(backup_blockchain_dir):
-        shutil.move(backup_blockchain_dir, os.getcwd())
-        print(f"[2024-10-20] Папка с блокчейнами успешно возвращена в проект.")
+    if os.path.exists(backup_dir):
+        console.print("\nЖелаете переместить папку с блокчейнами обратно в проект? (Y/n)")
+        choice = input().lower()
+        if choice != 'n':
+            shutil.move(backup_dir, blockchain_dir)
+            console.print(f"[{get_current_time()}] Папка с блокчейнами успешно перемещена обратно в проект.")
 
-    # Перезапуск меню
+    # Перезапуск меню после обновления
     restart_menu()
 
+# Функция для получения текущего времени
+def get_current_time():
+    from datetime import datetime
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+# Функция для перезапуска меню
 def restart_menu():
-    """
-    Перезапуск скрипта menu.py
-    """
-    # Получаем путь к текущему скрипту
     script_path = os.path.join(os.getcwd(), 'menu.py')
 
-    # Устанавливаем права на выполнение для скрипта menu.py
-    subprocess.run(['chmod', '+x', script_path], check=True)
+    # Устанавливаем права на выполнение скрипта
+    os.chmod(script_path, 0o755)
 
-    # Запускаем новый процесс с menu.py и выходим из текущего
-    os.execv(script_path, ['python3', script_path])
+    # Используем execv для замены текущего процесса на новый процесс Python, который перезапустит скрипт меню
+    console.print("[bold green]Перезапуск меню...[/bold green]")
+    os.execv('/usr/bin/python3', ['python3', script_path])
