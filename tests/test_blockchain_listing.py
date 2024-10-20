@@ -1,6 +1,7 @@
 # tests/test_blockchain_listing.py
 import os
 import json
+import hashlib
 from modules.blockchain_listing import list_blockchains
 
 BLOCKCHAIN_DIR = "blockchains"
