@@ -10,7 +10,7 @@ from modules.blockchain_creation import create_blockchain
 from modules.block_creation import create_new_block, view_blocks
 from modules.update_project import update_project
 from modules.run_tests import run_tests
-from modules.help_menu import display_help_menu
+from modules.help_menu import display_help_menu  # Ссылаемся на меню помощи
 
 console = Console()
 current_blockchain = None  # Переменная для отслеживания текущего блокчейна
@@ -41,13 +41,6 @@ def display_menu():
     table.add_row("7", "🔄 Обновить проект")
     table.add_row("H", "❓  Описание функционала")
     table.add_row("Q", "🚪 Выйти")
-
-    # Определяем ширину таблицы на основе максимальной длины строк
-    table_width = max(len(action) for _, action in [("1", "🧱 Создать новый блокчейн"), ("2", "📂 Загрузить блокчейн"),
-                                                    ("3", "📜 Список блокчейнов"), ("4", "📝 Создать новый блок"),
-                                                    ("5", "🔍 Просмотреть блоки"), ("6", "🧪 Запустить тесты"),
-                                                    ("7", "🔄 Обновить проект"), ("H", "❓  Описание функционала"),
-                                                    ("Q", "🚪 Выйти")]) + 10  # Задаем ширину с запасом
 
     console.print(table)  # Выводим таблицу меню
 
@@ -85,10 +78,7 @@ def main():
         elif choice == '7':
             update_project()
         elif choice == 'H':
-            display_help_menu()  # Вызов меню помощи
-            console.print("\nНажмите Enter для возврата в основное меню...")
-            input()  # Ожидаем нажатия Enter перед возвратом в основное меню
-            console.clear()  # Очищаем экран перед возвратом в основное меню
+            display_help_menu()  # Прямой вызов меню помощи
         elif choice == 'Q':
             console.print("[bold green]Выход...[/bold green]")
             break
