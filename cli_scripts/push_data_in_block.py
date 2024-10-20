@@ -6,11 +6,13 @@ import os
 import json
 import sys
 import hashlib
+from datetime import datetime
+
+# Добавляем путь к модулям в системный путь
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/..")
+
 from modules.blockchain_loading import load_blockchain
 from modules.block_creation import create_new_block
-
-
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/..")
 
 BLOCKCHAIN_DIR = "blockchains"  # Путь к папке с блокчейнами
 
