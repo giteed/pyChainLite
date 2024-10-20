@@ -12,6 +12,7 @@ from modules.blockchain_creation import create_blockchain
 from modules.block_creation import create_new_block, view_blocks
 from modules.update_project import update_project
 from modules.run_tests import run_tests
+import time
 
 console = Console()
 current_blockchain = None  # Переменная для отслеживания текущего блокчейна
@@ -28,10 +29,10 @@ def background_test_runner():
             test_result_message = "[green]🧪 Запуск тестов... OK 👍[/green]"
         else:
             # Если есть ошибки, выводим их перед меню
+            test_result_message = "[bold red]🧪 Запуск тестов... Ошибка ❌[/bold red]"
             console.print(f"[bold red]Обнаружены ошибки при тестировании:[/bold red]\n{result.stdout}")
             console.print("Нажмите Enter для продолжения...")
             input()
-            test_result_message = "[bold red]🧪 Запуск тестов... Ошибка ❌[/bold red]"
     except Exception as e:
         # Если произошла ошибка в процессе тестирования
         console.print(f"[bold red]Ошибка при запуске тестов: {e}[/bold red]")
@@ -72,6 +73,9 @@ def main():
     # Запускаем тесты в фоне
     test_thread = threading.Thread(target=background_test_runner)
     test_thread.start()
+
+    # Ожидаем завершения тестов перед тем, как показать меню
+    test_thread.join()
 
     while True:
         display_menu()
