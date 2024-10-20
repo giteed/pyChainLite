@@ -3,8 +3,8 @@
 # Получаем путь к директории скрипта
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
-# Определяем пути для папок проекта и логов
-PROJECT_DIR="$SCRIPT_DIR/pyChainLite"  # Папка pyChainLite внутри текущей директории
+# Определяем путь для папки проекта pyChainLite
+PROJECT_DIR="$SCRIPT_DIR/pyChainLite"
 LOG_DIR="$PROJECT_DIR/logs"
 LOG_FILE="$LOG_DIR/install-update.log"
 
@@ -54,8 +54,8 @@ if [ ! -d "$PROJECT_DIR/.git" ] || [ ! -f "$PROJECT_DIR/create_dirs.sh" ]; then
 
     log "Клонирую заново..."
 
-    # Проверяем, существует ли директория проекта (именно pyChainLite)
-    if [ -d "$PROJECT_DIR" ]; then
+    # Проверяем, существует ли директория проекта (pyChainLite)
+    if [ -d "$PROJECT_DIR" ];then
         log "Проект pyChainLite уже существует, но неполный."
         read -p "Вы хотите удалить текущую папку проекта pyChainLite и клонировать заново? (y/n): " confirm_delete
         if [ "$confirm_delete" != "y" ]; then
@@ -110,7 +110,7 @@ source "$PROJECT_DIR/venv/bin/activate" || { log "Ошибка активаци�
 if [ -f "$PROJECT_DIR/requirements.txt" ]; then
     log "Установка зависимостей из requirements.txt..."
     pip install --upgrade pip || { log "Ошибка обновления pip."; exit 1; }
-    pip install -r requirements.txt || { log "Ошибка установки зависимостей."; exit 1; }
+    pip install -r "$PROJECT_DIR/requirements.txt" || { log "Ошибка установки зависимостей."; exit 1; }
 else
     log "Файл requirements.txt не найден. Установка зависимостей невозможна."
     exit 1
