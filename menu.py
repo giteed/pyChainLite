@@ -1,5 +1,7 @@
 # menu.py
 # Меню pyChainLite
+# Назначение: Управление блокчейнами и блоками, запуск тестов, обновление проекта
+
 import os
 import subprocess
 import shutil
@@ -28,14 +30,14 @@ def display_menu():
     # Работа с блокчейнами
     table.add_row("1", "🧱 Создать новый блокчейн")
     table.add_row("2", "📂 Загрузить блокчейн")
-    table.add_row("5", "📜 Список блокчейнов")
+    table.add_row("3", "📜 Список блокчейнов")
 
     # Разделительная линия
     table.add_row("", "")
 
     # Работа с блоками
-    table.add_row("3", "📝 Создать новый блок")
-    table.add_row("4", "🔍 Просмотреть блоки")
+    table.add_row("4", "📝 Создать новый блок")
+    table.add_row("5", "🔍 Просмотреть блоки")
 
     # Разделительная линия
     table.add_row("", "")
@@ -66,17 +68,17 @@ def main():
         elif choice == '2':
             current_blockchain = load_blockchain()
         elif choice == '3':
+            list_blockchains()
+        elif choice == '4':
             if current_blockchain:
                 create_new_block(current_blockchain)
             else:
                 console.print("[red]Сначала загрузите блокчейн.[/red]")
-        elif choice == '4':
+        elif choice == '5':
             if current_blockchain:
                 view_blocks(current_blockchain)
             else:
                 console.print("[red]Сначала загрузите блокчейн.[/red]")
-        elif choice == '5':
-            list_blockchains()
         elif choice == '6':
             run_tests()
         elif choice == '7':
