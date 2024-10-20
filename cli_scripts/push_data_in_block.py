@@ -33,11 +33,14 @@ def push_data_to_block(blockchain_name, user_id, data):
 
     # Проверяем, есть ли у пользователя права на запись в блокчейн
     if user_id != blockchain_data["blocks"][0]["data"]["owner"]:
-        print(f"Ошибка: Пользователь '{user_id}' не имеет прав на запись в этот блокчейн.")
+        print(f"Ошибка: Пользователь '{user_id}' не имеет прав на запись в этот блокчейне.")
         return
 
     # Добавляем новый блок с переданными данными и идентификатором пользователя
     new_block = create_new_block(blockchain_data, data, user_id=user_id)
+
+    # Преобразуем timestamp в читаемый формат
+    readable_time = datetime.fromtimestamp(float(new_block.timestamp)).strftime('%Y-%m-%d %H:%M:%S')
 
     # Сохраняем обновленный блокчейн
     with open(blockchain_path, 'w') as f:
@@ -45,7 +48,7 @@ def push_data_to_block(blockchain_name, user_id, data):
     
     # Выводим информацию о новом блоке
     print(f"Новый блок ({new_block.index}) с данными успешно добавлен в блокчейн '{blockchain_name}'.")
-    print(f"Время добавления: {new_block.timestamp}")
+    print(f"Время добавления: {readable_time}")
     print(f"Хэш нового блока: {new_block.hash}")
     print(f"Хэш предыдущего блока: {new_block.previous_hash}")
     print(f"Добавлен пользователем: {new_block.data['added_by']}")
