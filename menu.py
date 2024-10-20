@@ -16,6 +16,7 @@ from modules.block_viewer import view_blocks
 from modules.blockchain_listing import list_blockchains
 from modules.run_tests import run_tests
 from modules.update_project import update_project
+from modules.menu_help import display_help_menu  # Новый импорт для помощи
 
 console = Console()
 
@@ -51,6 +52,9 @@ def display_menu():
     # Обновление
     table.add_row("7", "🔄 Обновить проект")
 
+    # Помощь
+    table.add_row("H", "ℹ️  Описание функционала")
+
     # Выход
     table.add_row("Q", "🚪 Выйти")
 
@@ -61,7 +65,7 @@ def main():
     global current_blockchain
     while True:
         display_menu()
-        choice = input("Выберите действие (1-7 или Q): ").strip().upper()
+        choice = input("Выберите действие (1-7, H или Q): ").strip().upper()
         
         if choice == '1':
             create_blockchain()
@@ -83,11 +87,13 @@ def main():
             run_tests()
         elif choice == '7':
             update_project()
+        elif choice == 'H':
+            display_help_menu()  # Вызов подменю помощи
         elif choice == 'Q':
             console.print("[bold green]Выход...[/bold green]")
             break
         else:
-            console.print("[bold red]Неверный выбор. Пожалуйста, выберите действие от 1 до 7 или Q.[/bold red]")
+            console.print("[bold red]Неверный выбор. Пожалуйста, выберите действие от 1 до 7, H или Q.[/bold red]")
 
 if __name__ == "__main__":
     main()
