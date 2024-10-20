@@ -31,7 +31,7 @@ init_logging() {
     fi
 
     # Создаем файл лога, если он не существует
-    if [ ! -f "$LOG_FILE" ]; then
+    if [ ! -f "$LOG_FILE" ]; тогда
         touch "$LOG_FILE" || { echo "Ошибка создания файла лога."; exit 1; }
     fi
 
@@ -115,4 +115,3 @@ deactivate || log "Команда deactivate не найдена. Пропуск
 cd "$SCRIPT_DIR"
 
 log "Скрипт завершил работу. Лог записан в $LOG_FILE."
-
