@@ -1,5 +1,5 @@
 # modules/block_creation.py
-# Модуль для создания блоков и просмотра блоков в текущем блокчейне, включая поддержку данных через аргументы командной строки
+# Модуль для создания блоков и просмотра блоков в текущем блокчейне
 
 import os
 import json
@@ -10,18 +10,23 @@ console = Console()
 
 BLOCKCHAIN_DIR = "blockchains"
 
-def create_new_block(current_blockchain, data=None):
+def create_new_block(current_blockchain, data, user_id=None):
     """
     Создание нового блока в загруженном блокчейне.
-    Аргумент `data` может быть передан извне или введен интерактивно.
+    Аргументы:
+    - current_blockchain: данные текущего блокчейна
+    - data: данные для нового блока
+    - user_id: идентификатор пользователя, который добавляет блок (опционально)
     """
-    if data is None:
-        data = input("Введите данные для нового блока: ").strip()
-    
     last_block = current_blockchain["blocks"][-1]
+    new_block_data = {
+        "data": data,
+        "added_by": user_id  # Добавляем идентификатор пользователя, если он передан
+    }
+    
     new_block = Block(
         index=last_block["index"] + 1,
-        data=data,
+        data=new_block_data,  # Вставляем данные блока
         previous_hash=last_block["hash"]
     )
 
@@ -35,6 +40,7 @@ def create_new_block(current_blockchain, data=None):
         json.dump(current_blockchain, f, indent=4)
     
     console.print(f"[green]Новый блок успешно добавлен в блокчейн {current_blockchain['blocks'][0]['data']['blockchain_name']}.[/green]")
+    return new_block  # Возвращаем новый блок
 
 def view_blocks(current_blockchain):
     """
@@ -48,4 +54,3 @@ def view_blocks(current_blockchain):
     
     for block in current_blockchain["blocks"]:
         console.print(f"Block(index: {block['index']}, data: {block['data']}, hash: {block['hash']})")
-
