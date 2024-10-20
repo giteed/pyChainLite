@@ -1,4 +1,6 @@
 #!/bin/bash
+# install-update.sh
+# Скрипт для клонирования или обновления проекта pyChainLite и настройки окружения
 
 # Получаем путь к директории скрипта
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
