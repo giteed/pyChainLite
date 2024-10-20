@@ -1,18 +1,19 @@
 # modules/block_creation.py
-# Модуль для создания нового блока
+# Модуль для создания блоков и просмотра блоков в текущем блокчейне
+
 import os
 import json
-from src.blockchain import Block
 from rich.console import Console
+from src.blockchain import Block
 
 console = Console()
+
 BLOCKCHAIN_DIR = "blockchains"
 
 def create_new_block(current_blockchain):
-    if not current_blockchain:
-        console.print("[red]Сначала загрузите блокчейн.[/red]")
-        return
-
+    """
+    Создание нового блока в загруженном блокчейне.
+    """
     data = input("Введите данные для нового блока: ").strip()
     last_block = current_blockchain["blocks"][-1]
     new_block = Block(
@@ -23,8 +24,24 @@ def create_new_block(current_blockchain):
 
     current_blockchain["blocks"].append(new_block.__dict__)
 
-    blockchain_path = os.path.join(BLOCKCHAIN_DIR, current_blockchain["file"])
+    blockchain_file = current_blockchain["file"]
+    blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
+    
+    # Сохраняем новый блок в файл блокчейна
     with open(blockchain_path, 'w') as f:
         json.dump(current_blockchain, f, indent=4)
+    
+    console.print(f"[green]Новый блок успешно добавлен в блокчейн {current_blockchain['blocks'][0]['data']['blockchain_name']}.[/green]")
 
-    console.print(f"[green]Новый блок успешно добавлен в блокчейн.[/green]")
+def view_blocks(current_blockchain):
+    """
+    Просмотр всех блоков в загруженном блокчейне.
+    """
+    if not current_blockchain:
+        console.print("[red]Блокчейн не загружен.[/red]")
+        return
+
+    console.print(f"Текущий блокчейн: [bold green]{current_blockchain['blocks'][0]['data']['blockchain_name']}[/bold green]\n")
+    
+    for block in current_blockchain["blocks"]:
+        console.print(f"Block(index: {block['index']}, data: {block['data']}, hash: {block['hash']})")
