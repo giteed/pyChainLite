@@ -13,7 +13,6 @@ if [[ $(echo -e "$PYTHON_VERSION\n$REQUIRED_VERSION" | sort -V | head -n1) != "$
     echo "Рекомендуем установить или использовать версию Python $REQUIRED_VERSION для избежания возможных проблем."
 fi
 
-
 # Определяем путь для папки проекта pyChainLite
 PROJECT_DIR="$SCRIPT_DIR/pyChainLite"
 LOG_DIR="$PROJECT_DIR/logs"
@@ -116,3 +115,4 @@ deactivate || log "Команда deactivate не найдена. Пропуск
 cd "$SCRIPT_DIR"
 
 log "Скрипт завершил работу. Лог записан в $LOG_FILE."
+
