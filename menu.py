@@ -4,7 +4,7 @@
 from rich.console import Console
 from modules.blockchain_creation import create_blockchain
 from modules.blockchain_loading import load_blockchain
-from modules.blockchain_listing import list_blockchains
+from modules.blockchain_listing import list_blockchains  # Правильный импорт
 from modules.block_creation import create_new_block
 from modules.update_project import update_project
 from modules.run_tests import run_tests
