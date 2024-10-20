@@ -1,4 +1,10 @@
 # modules/blockchain_creation.py
+import hashlib  # Импортируем hashlib
+import json
+import os
+from datetime import datetime
+
+BLOCKCHAIN_DIR = "blockchains"  # Путь к папке с блокчейнами
 
 def create_blockchain(blockchain_name, owner_name):
     """
@@ -40,3 +46,4 @@ def create_blockchain(blockchain_name, owner_name):
 
     print(f"Блокчейн '{blockchain_name}' успешно создан.")
     return blockchain_data
+
