@@ -48,14 +48,13 @@ def display_menu():
                                                     ("7", "🔄 Обновить проект"), ("H", "❓  Описание функционала"),
                                                     ("Q", "🚪 Выйти")]) + 10  # Задаем ширину с запасом
 
-    # Центрируем информацию о блокчейне относительно таблицы
-    if current_blockchain:
-        blockchain_info = f"[bold green]Текущий блокчейн: {current_blockchain['blocks'][0]['data']['blockchain_name']}[/bold green]"
-    else:
-        blockchain_info = "[bold red]Блокчейн не загружен[/bold red]"
-
-    console.print(blockchain_info.center(table_width))  # Центрируем по ширине таблицы
     console.print(table)  # Выводим таблицу меню
+
+    # Вывод информации о текущем блокчейне перед выбором действия
+    if current_blockchain:
+        console.print(f"\n[bold green]Текущий блокчейн: {current_blockchain['blocks'][0]['data']['blockchain_name']}[/bold green]")
+    else:
+        console.print("\n[bold red]Блокчейн не загружен[/bold red]")
 
 def main():
     global current_blockchain
