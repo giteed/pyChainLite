@@ -3,6 +3,17 @@
 # Получаем путь к директории скрипта
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
+# Получаем текущую версию Python
+PYTHON_VERSION=$(python3 -V 2>&1 | awk '{print $2}')
+REQUIRED_VERSION="3.12"
+
+# Проверяем, соответствует ли версия Python необходимой
+if [[ $(echo -e "$PYTHON_VERSION\n$REQUIRED_VERSION" | sort -V | head -n1) != "$REQUIRED_VERSION" ]]; then
+    echo "[ВНИМАНИЕ] Ваш текущий Python: $PYTHON_VERSION. Этот продукт был протестирован на Python $REQUIRED_VERSION."
+    echo "Рекомендуем установить или использовать версию Python $REQUIRED_VERSION для избежания возможных проблем."
+fi
+
+
 # Определяем путь для папки проекта pyChainLite
 PROJECT_DIR="$SCRIPT_DIR/pyChainLite"
 LOG_DIR="$PROJECT_DIR/logs"
