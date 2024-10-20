@@ -4,21 +4,14 @@
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
 # Определяем пути для папок проекта и логов
-PROJECT_DIR="$SCRIPT_DIR/pyChainLite"
+PROJECT_DIR="$SCRIPT_DIR"
 LOG_DIR="$PROJECT_DIR/logs"
 LOG_FILE="$LOG_DIR/install-update.log"
-BLOCKCHAIN_DIR="$PROJECT_DIR/blockchains"  # Путь к папке с блокчейнами
 
 # Функция для записи в лог с датой и временем
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
 }
-
-# Проверяем существование папки проекта
-if [ ! -d "$PROJECT_DIR" ]; then
-    log "Папка проекта не найдена. Создаю папку $PROJECT_DIR..."
-    mkdir -p "$PROJECT_DIR" || { log "Ошибка: не удалось создать папку проекта."; exit 1; }
-fi
 
 # Создаем папку для логов, если она не существует
 if [ ! -d "$LOG_DIR" ]; then
@@ -59,41 +52,30 @@ if [ ! -d "$PROJECT_DIR/.git" ] || [ ! -f "$PROJECT_DIR/create_dirs.sh" ]; then
     git clone https://github.com/giteed/pyChainLite.git "$PROJECT_DIR" || { log "Ошибка клонирования репозитория."; exit 1; }
     
     log "Клонирование завершено успешно."
-fi
-
-# Перемещаемся в папку проекта
-cd "$PROJECT_DIR" || { log "Ошибка: не удается зайти в директорию проекта."; exit 1; }
-
-# Запуск скрипта для создания папок src и tests
-if [ ! -f "$PROJECT_DIR/create_dirs.sh" ]; then
-    log "Ошибка: скрипт create_dirs.sh не найден даже после клонирования."
-    exit 1
-fi
-
-log "Проверка и создание необходимых директорий..."
-chmod +x "$PROJECT_DIR/create_dirs.sh"
-chmod +x "$PROJECT_DIR/update-and-start.sh"
-"$PROJECT_DIR/create_dirs.sh"
-
-# Если проект уже существует, выполняем обновление
-if [ -d "$PROJECT_DIR/.git" ]; then
-    log "Проект уже существует, выполняется обновление..."
+else
+    # Если проект уже существует, просто обновляем его
     cd "$PROJECT_DIR" || { log "Ошибка: не удается зайти в директорию проекта."; exit 1; }
-
-    # Принудительно сбрасываем изменения и обновляем проект
+    log "Проект уже существует, выполняется обновление..."
+    
     log "Сброс локальных изменений..."
     git reset --hard HEAD || { log "Ошибка при сбросе изменений."; exit 1; }
-    
+
     log "Обновление репозитория..."
     git pull origin main || { log "Ошибка при обновлении репозитория."; exit 1; }
-
-    log "Установка прав на выполнение для start.sh и update-and-start.sh..."
-    chmod +x "$PROJECT_DIR/start.sh" || { log "Ошибка при установке прав на выполнение для start.sh."; exit 1; }
-    chmod +x "$PROJECT_DIR/update-and-start.sh" || { log "Ошибка при установке прав на выполнение для update-and-start.sh."; exit 1; }
 fi
 
-# Перемещаемся в директорию проекта для установки зависимостей
-cd "$PROJECT_DIR" || { log "Ошибка: не удается зайти в директорию проекта."; exit 1; }
+# Запуск скрипта для создания папок src и tests
+if [ -f "$PROJECT_DIR/create_dirs.sh" ]; then
+    log "Проверка и создание необходимых директорий..."
+    chmod +x "$PROJECT_DIR/create_dirs.sh"
+    "$PROJECT_DIR/create_dirs.sh"
+else
+    log "Скрипт create_dirs.sh не найден."
+fi
+
+log "Установка прав на выполнение для start.sh и update-and-start.sh..."
+chmod +x "$PROJECT_DIR/start.sh" || { log "Ошибка при установке прав на выполнение для start.sh."; exit 1; }
+chmod +x "$PROJECT_DIR/update-and-start.sh" || { log "Ошибка при установке прав на выполнение для update-and-start.sh."; exit 1; }
 
 # Создаем виртуальное окружение, если оно не создано
 if [ ! -d "venv" ]; then
@@ -131,7 +113,9 @@ else
 fi
 
 # Завершение работы виртуального окружения
+log "Завершение работы виртуального окружения."
 deactivate || log "Команда deactivate не найдена. Пропускаю деактивацию виртуального окружения."
+
 cd "$SCRIPT_DIR"
 
 log "Скрипт завершил работу. Лог записан в $LOG_FILE."
