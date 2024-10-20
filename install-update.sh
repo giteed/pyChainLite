@@ -124,12 +124,13 @@ fi
 
 # Завершение работы виртуального окружения, если оно было активировано
 if [[ "$VIRTUAL_ENV" != "" ]]; then
-    deactivate
+    if command -v deactivate &> /dev/null; then
+        deactivate
+    else
+        log "Команда deactivate не найдена. Пропускаю деактивацию виртуального окружения."
+    fi
 else
     log "Виртуальное окружение не было активировано, команда deactivate пропущена."
 fi
 
-cd "$SCRIPT_DIR"
-
-log "Скрипт завершил работу. Лог записан в $LOG_FILE."
 
