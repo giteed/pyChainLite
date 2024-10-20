@@ -58,7 +58,7 @@ if [ ! -d "$PROJECT_DIR/.git" ] || [ ! -f "$PROJECT_DIR/create_dirs.sh" ]; then
     if [ -d "$PROJECT_DIR" ];then
         log "Проект pyChainLite уже существует, но неполный."
         read -p "Вы хотите удалить текущую папку проекта pyChainLite и клонировать заново? (y/n): " confirm_delete
-        if [ "$confirm_delete" != "y" ]; then
+        if [ "$confirm_delete" != "y" ]; тогда
             log "Операция отменена. Рекомендуется вручную удалить папку pyChainLite и повторить запуск скрипта."
             exit 1
         fi
@@ -80,6 +80,9 @@ else
     log "Обновление репозитория..."
     git pull origin main || { log "Ошибка при обновлении репозитория."; exit 1; }
 fi
+
+# Переходим в папку проекта перед запуском создания директорий
+cd "$PROJECT_DIR" || { log "Ошибка: не удалось зайти в директорию проекта."; exit 1; }
 
 # Запуск скрипта для создания папок src и tests
 if [ -f "$PROJECT_DIR/create_dirs.sh" ]; then
