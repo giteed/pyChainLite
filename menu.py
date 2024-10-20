@@ -41,14 +41,8 @@ def display_menu():
     # Выводим статус тестов
     console.print(test_result_message)
 
-    # Информация о текущем блокчейне
-    if current_blockchain:
-        blockchain_info = f"Текущий блокчейн: [bold green]{current_blockchain['blocks'][0]['data']['blockchain_name']}[/bold green]"
-    else:
-        blockchain_info = "[bold red]Блокчейн не загружен[/bold red]"
-
-    # Выводим информацию о блокчейне перед таблицей
-    console.print(blockchain_info)
+    # Добавляем пустую строку для разделения между тестами и меню
+    console.print()
 
     # Основное меню
     table = Table(title="Меню pyChainLite", show_header=True, header_style="bold cyan")
@@ -70,6 +64,17 @@ def display_menu():
 
     # Выводим таблицу меню
     console.print(table)
+
+    # Добавляем пустую строку перед информацией о блокчейне
+    console.print()
+
+    # Информация о текущем блокчейне, выровненная по центру
+    if current_blockchain:
+        blockchain_info = f"[bold green]Текущий блокчейн: {current_blockchain['blocks'][0]['data']['blockchain_name']}[/bold green]"
+    else:
+        blockchain_info = "[bold red]Блокчейн не загружен[/bold red]"
+
+    console.print(blockchain_info, justify="center")
 
 def main():
     global current_blockchain
