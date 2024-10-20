@@ -20,7 +20,7 @@ def create_new_block(current_blockchain, data, user_id=None):
     - user_id: идентификатор пользователя, который добавляет блок (опционально)
     """
     last_block = current_blockchain["blocks"][-1]
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # Читаемый формат времени
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # Преобразуем время в читаемый формат
 
     new_block_data = {
         "data": data,
