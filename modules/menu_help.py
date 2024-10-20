@@ -7,32 +7,32 @@ from rich.table import Table
 
 console = Console()
 
-# Обновите путь на правильный
 HELP_DIR = "docs/menu_help"  # Указали 'docs' вместо 'doc'
 
 def display_help_menu():
-    table = Table(title="ℹ️  Описание функционала", show_header=True, header_style="bold yellow")
-    table.add_column("##", style="dim")
-    table.add_column("Описание", style="bold")
+    while True:  # Добавляем цикл, чтобы повторять меню помощи
+        table = Table(title="ℹ️  Описание функционала", show_header=True, header_style="bold yellow")
+        table.add_column("##", style="dim")
+        table.add_column("Описание", style="bold")
 
-    # Описание функционала по разделам
-    table.add_row("1", "🧱 Создать новый блокчейн")
-    table.add_row("2", "📂 Загрузить блокчейн")
-    table.add_row("3", "📜 Список блокчейнов")
-    table.add_row("4", "📝 Создать новый блок")
-    table.add_row("5", "🔍 Просмотреть блоки")
-    table.add_row("6", "🧪 Запустить тесты")
-    table.add_row("7", "🔄 Обновить проект")
-    table.add_row("Q", "🚪 Вернуться в основное меню")
+        # Описание функционала по разделам
+        table.add_row("1", "🧱 Создать новый блокчейн")
+        table.add_row("2", "📂 Загрузить блокчейн")
+        table.add_row("3", "📜 Список блокчейнов")
+        table.add_row("4", "📝 Создать новый блок")
+        table.add_row("5", "🔍 Просмотреть блоки")
+        table.add_row("6", "🧪 Запустить тесты")
+        table.add_row("7", "🔄 Обновить проект")
+        table.add_row("Q", "🚪 Вернуться в основное меню")
 
-    console.print(table)
+        console.print(table)
 
-    choice = input("Выберите пункт для справки (1-7 или Q): ").strip().upper()
+        choice = input("Выберите пункт для справки (1-7 или Q): ").strip().upper()
 
-    if choice == 'Q':
-        return
-    else:
-        display_help_content(choice)
+        if choice == 'Q':
+            break  # Прекращаем цикл, если выбрана команда 'Q'
+        else:
+            display_help_content(choice)
 
 def display_help_content(choice):
     help_files = {
@@ -48,7 +48,7 @@ def display_help_content(choice):
 
     help_file = help_files.get(choice)
     if help_file:
-        file_path = os.path.join(HELP_DIR, help_file)  # Ссылка на правильную папку
+        file_path = os.path.join(HELP_DIR, help_file)
         if os.path.exists(file_path):
             with open(file_path, 'r') as f:
                 content = f.read()
@@ -58,4 +58,4 @@ def display_help_content(choice):
     else:
         console.print("[red]Неверный выбор.[/red]")
 
-    input("\nНажмите Enter для возврата в меню помощи...")
+    input("\nНажмите Enter для возврата в меню помощи...")  # Возвращает в меню помощи
