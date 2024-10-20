@@ -33,7 +33,7 @@ init_logging() {
     fi
 
     # Создаем файл лога, если он не существует
-    if [ ! -f "$LOG_FILE" ]; тогда
+    if [ ! -f "$LOG_FILE" ]; then
         touch "$LOG_FILE" || { echo "Ошибка создания файла лога."; exit 1; }
     fi
 
