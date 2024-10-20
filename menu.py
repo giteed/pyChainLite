@@ -10,7 +10,7 @@ from modules.blockchain_creation import create_blockchain
 from modules.block_creation import create_new_block, view_blocks
 from modules.update_project import update_project
 from modules.run_tests import run_tests
-from modules.help_menu import display_help_menu  # Ссылаемся на меню помощи
+from modules.menu_help import display_help_menu  # Ссылаемся на menu_help.py
 
 console = Console()
 current_blockchain = None  # Переменная для отслеживания текущего блокчейна
@@ -78,7 +78,7 @@ def main():
         elif choice == '7':
             update_project()
         elif choice == 'H':
-            display_help_menu()  # Прямой вызов меню помощи
+            display_help_menu()  # Вызов меню помощи из menu_help.py
         elif choice == 'Q':
             console.print("[bold green]Выход...[/bold green]")
             break
