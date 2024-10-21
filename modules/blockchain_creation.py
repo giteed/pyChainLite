@@ -14,9 +14,9 @@ def create_blockchain(blockchain_name, owner_name=None):
     # Проверка: если файл блокчейна уже существует
     if os.path.exists(blockchain_path):
         print(f"[red]Блокчейн с именем '{blockchain_name}' уже существует.[/red]")
-        return None  # Прерываем создание блокчейна
+        return None  # Прерываем создание блокчейна, ничего не создаем
 
-    # Теперь запрашиваем владельца, если блокчейн не существует
+    # Запрашиваем владельца, если блокчейн не существует
     if not owner_name:
         owner_name = input("Введите имя владельца: ")
 
