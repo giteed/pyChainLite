@@ -8,8 +8,9 @@ from rich.console import Console
 
 console = Console()
 
-# Путь к папке с блокчейнами
-BLOCKCHAIN_DIR = "blockchains"
+# Определяем путь к корневой директории
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BLOCKCHAIN_DIR = os.path.join(ROOT_DIR, "blockchains")
 
 def load_blockchain(blockchain_name):
     """
@@ -21,7 +22,6 @@ def load_blockchain(blockchain_name):
     blockchain_file = f"{blockchain_hash}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
 
-    # Отладочная информация
     console.print(f"[blue]Отладка:[/blue] Пытаемся загрузить блокчейн из файла: {blockchain_path}")
 
     # Проверяем, существует ли файл
@@ -33,7 +33,6 @@ def load_blockchain(blockchain_name):
     try:
         with open(blockchain_path, 'r') as f:
             blockchain_data = json.load(f)
-            # Отладочная информация
             console.print(f"[blue]Отладка:[/blue] Данные блокчейна успешно загружены: {blockchain_data}")
             return blockchain_data
     except json.JSONDecodeError as e:
