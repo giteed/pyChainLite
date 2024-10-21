@@ -1,28 +1,22 @@
-# blockchain_loading.py
-# Модуль для загрузки блокчейна по его имени
-
+# modules/blockchain_loading.py
 import os
 import json
 
 BLOCKCHAIN_DIR = "blockchains"
 
 def load_blockchain(blockchain_name):
-    """
-    Загружает блокчейн по имени.
-    
-    :param blockchain_name: Имя блокчейна для загрузки
-    :return: Данные блокчейна или None, если файл не найден
-    """
-    # Хешируем имя блокчейна для нахождения файла
-    blockchain_file = f"{blockchain_name}.json"
+    # Формируем имя файла на основе хеша блокчейна
+    blockchain_hash = hashlib.sha256(blockchain_name.encode()).hexdigest()
+    blockchain_file = f"{blockchain_hash}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
 
     # Проверяем, существует ли файл блокчейна
-    if os.path.exists(blockchain_path):
-        with open(blockchain_path, 'r') as f:
-            blockchain_data = json.load(f)
-        print(f"Блокчейн '{blockchain_name}' успешно загружен.")
-        return blockchain_data
-    else:
+    if not os.path.exists(blockchain_path):
         print(f"Ошибка: Блокчейн '{blockchain_name}' не найден.")
         return None
+
+    # Загружаем блокчейн из файла
+    with open(blockchain_path, 'r') as f:
+        blockchain_data = json.load(f)
+
+    return blockchain_data
