@@ -62,7 +62,9 @@ def main():
         
         elif choice == '4':
             if current_blockchain:
-                create_new_block(current_blockchain)
+                block_data = input("Введите данные для нового блока: ")
+                create_new_block(current_blockchain, block_data)  # Передаем блокчейн и данные блока
+                console.print(f"Новый блок успешно добавлен в блокчейн '{current_blockchain['name']}'.")
             else:
                 console.print("[red]Блокчейн не загружен. Сначала загрузите блокчейн.[/red]")
         
