@@ -23,6 +23,7 @@ def create_blockchain(blockchain_name, owner_name):
     # Проверяем наличие директории для хранения блокчейнов
     if not os.path.exists(BLOCKCHAIN_DIR):
         os.makedirs(BLOCKCHAIN_DIR)
+        console.print(f"[blue]Отладка:[/blue] Папка для блокчейнов создана: {BLOCKCHAIN_DIR}")
 
     # Генерируем хеш для имени блокчейна
     blockchain_hash = hashlib.sha256(blockchain_name.encode()).hexdigest()
@@ -68,8 +69,9 @@ def create_new_block(blockchain_data, data, user_id):
     """
     Создает новый блок и добавляет его в цепочку.
     """
-    # Получаем предыдущий блок
+    # Отладка: получение предыдущего блока
     last_block = blockchain_data["blocks"][-1]
+    console.print(f"[blue]Отладка:[/blue] Последний блок в цепочке: {last_block}")
 
     # Новый блок
     new_block = {
@@ -95,12 +97,20 @@ def create_new_block(blockchain_data, data, user_id):
     blockchain_file = f"{blockchain_hash}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
 
-    # Проверяем, существует ли директория для блокчейнов
+    # Отладка: проверка и создание директории блокчейнов
     if not os.path.exists(BLOCKCHAIN_DIR):
         os.makedirs(BLOCKCHAIN_DIR)
+        console.print(f"[blue]Отладка:[/blue] Папка для блокчейнов создана: {BLOCKCHAIN_DIR}")
+
+    # Отладка: путь к файлу блокчейна
+    console.print(f"[blue]Отладка:[/blue] Путь к файлу блокчейна: {blockchain_path}")
 
     # Сохраняем блокчейн в файл
-    with open(blockchain_path, 'w') as f:
-        json.dump(blockchain_data, f, indent=4)
+    try:
+        with open(blockchain_path, 'w') as f:
+            json.dump(blockchain_data, f, indent=4)
+        console.print(f"[green]Новый блок успешно добавлен в блокчейн '{blockchain_data['name']}'[/green]")
+    except Exception as e:
+        console.print(f"[red]Ошибка при сохранении блока: {e}[/red]")
 
     return new_block
