@@ -6,7 +6,7 @@ from datetime import datetime
 
 BLOCKCHAIN_DIR = "blockchains"
 
-def create_blockchain(blockchain_name, owner_name):
+def create_blockchain(blockchain_name, owner_name=None):
     # Генерируем имя файла для блокчейна на основе хеша
     blockchain_file = f"{hashlib.sha256(blockchain_name.encode()).hexdigest()}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
@@ -15,6 +15,10 @@ def create_blockchain(blockchain_name, owner_name):
     if os.path.exists(blockchain_path):
         print(f"[red]Блокчейн с именем '{blockchain_name}' уже существует.[/red]")
         return None  # Прерываем создание блокчейна
+
+    # Теперь запрашиваем владельца, если блокчейн не существует
+    if not owner_name:
+        owner_name = input("Введите имя владельца: ")
 
     # Данные для нового блокчейна
     blockchain_data = {
@@ -35,6 +39,7 @@ def create_blockchain(blockchain_name, owner_name):
     with open(blockchain_path, 'w') as f:
         json.dump(blockchain_data, f, indent=4)
 
+    print(f"Блокчейн '{blockchain_name}' успешно создан.")
     return blockchain_data
 
 def get_current_time():
