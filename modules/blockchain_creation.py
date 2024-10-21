@@ -3,24 +3,28 @@ import hashlib
 import json
 import os
 from datetime import datetime
+from rich.console import Console
+
+console = Console()
 
 BLOCKCHAIN_DIR = "blockchains"
 
-def create_blockchain(blockchain_name, owner_name=None):
-    # Генерируем имя файла для блокчейна на основе хеша
+def create_blockchain(blockchain_name):
+    # Генерация хеш-имени файла для блокчейна
     blockchain_file = f"{hashlib.sha256(blockchain_name.encode()).hexdigest()}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
 
-    # Проверка: если файл блокчейна уже существует
+    # Проверка: если блокчейн с таким именем уже существует
     if os.path.exists(blockchain_path):
-        print(f"[red]Блокчейн с именем '{blockchain_name}' уже существует. Операция прервана.[/red]")
-        return None  # Прерываем создание блокчейна, ничего не создаем
+        console.print(f"[red]Блокчейн с именем '{blockchain_name}' уже существует. Операция прервана.[/red]")
+        return None  # Прерывание
 
-    # Если блокчейн не существует, запрашиваем имя владельца
-    if not owner_name:
-        owner_name = input("Введите имя владельца: ")
+    console.print(f"[green]Имя блокчейна '{blockchain_name}' свободно![/green]")
 
-    # Данные для нового блокчейна
+    # Запрашиваем имя владельца только если блокчейн не существует
+    owner_name = input("Введите имя владельца: ")
+
+    # Данные для создания нового блокчейна
     blockchain_data = {
         "name": blockchain_name,
         "blocks": [{
@@ -40,7 +44,7 @@ def create_blockchain(blockchain_name, owner_name=None):
     with open(blockchain_path, 'w') as f:
         json.dump(blockchain_data, f, indent=4)
 
-    print(f"Блокчейн '{blockchain_name}' успешно создан.")
+    console.print(f"[green]Блокчейн '{blockchain_name}' успешно создан.[/green]")
     return blockchain_data
 
 def get_current_time():
