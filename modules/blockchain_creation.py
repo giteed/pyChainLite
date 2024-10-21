@@ -1,24 +1,22 @@
 # modules/blockchain_creation.py
-import hashlib  # Импортируем hashlib
+import hashlib
 import json
 import os
 from datetime import datetime
 
-BLOCKCHAIN_DIR = "blockchains"  # Путь к папке с блокчейнами
+BLOCKCHAIN_DIR = "blockchains"
 
 def create_blockchain(blockchain_name, owner_name):
-    # Compute the hash-based filename
+    # Генерируем имя файла для блокчейна на основе хеша
     blockchain_file = f"{hashlib.sha256(blockchain_name.encode()).hexdigest()}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
 
-    # Check if the blockchain already exists
+    # Проверка: если файл блокчейна уже существует
     if os.path.exists(blockchain_path):
         print(f"[red]Блокчейн с именем '{blockchain_name}' уже существует.[/red]")
-        overwrite = input("Вы хотите перезаписать существующий блокчейн? (y/n): ").strip().lower()
-        if overwrite != 'y':
-            return None
+        return None  # Прерываем создание блокчейна
 
-    # Proceed with the creation if confirmed
+    # Данные для нового блокчейна
     blockchain_data = {
         "name": blockchain_name,
         "blocks": [{
@@ -33,8 +31,11 @@ def create_blockchain(blockchain_name, owner_name):
         }]
     }
 
-    # Write the blockchain to file
+    # Сохраняем блокчейн в файл
     with open(blockchain_path, 'w') as f:
         json.dump(blockchain_data, f, indent=4)
-    
+
     return blockchain_data
+
+def get_current_time():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
