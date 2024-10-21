@@ -1,56 +1,54 @@
-# modules/blockchain_creation.py
-# Модуль для создания нового блокчейна в pyChainLite
-# Этот модуль включает функции для создания блокчейна с генезис-блоком и проверки существования блокчейнов.
-# Функции:
-# - blockchain_exists(blockchain_name): проверяет, существует ли блокчейн с данным именем.
-# - create_blockchain(blockchain_name, owner_name): создает новый блокчейн с генезис-блоком.
+# modules/block_creation.py
+# Модуль для создания нового блока в блокчейне
 
 import hashlib
 import json
 import os
-from datetime import datetime
+import time
+from rich.console import Console
 
-BLOCKCHAIN_DIR = "blockchains"
+console = Console()
 
-def blockchain_exists(blockchain_name):
+# Определяем путь к корневой директории
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BLOCKCHAIN_DIR = os.path.join(ROOT_DIR, "blockchains")
+
+def create_new_block(blockchain_data, data, user_id):
     """
-    Проверяет, существует ли блокчейн с данным именем.
+    Создает новый блок в блокчейне с указанными данными.
     """
-    blockchain_file = f"{hashlib.sha256(blockchain_name.encode()).hexdigest()}.json"
-    blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
-    return os.path.exists(blockchain_path)
+    last_block = blockchain_data["blocks"][-1]
+    previous_hash = last_block["hash"]
 
-def create_blockchain(blockchain_name, owner_name):
-    """
-    Создает новый блокчейн.
-    """
-    if blockchain_exists(blockchain_name):
-        return None
-
-    blockchain_file = f"{hashlib.sha256(blockchain_name.encode()).hexdigest()}.json"
-    blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
-
-    os.makedirs(BLOCKCHAIN_DIR, exist_ok=True)
-
-    genesis_block = {
-        "index": 0,
-        "timestamp": str(datetime.now()),
+    new_block = {
+        "index": last_block["index"] + 1,
+        "timestamp": time.time(),
         "data": {
-            "blockchain_name": blockchain_name,
-            "owner": owner_name
+            "data": data,
+            "added_by": user_id,
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
         },
-        "previous_hash": "0" * 64,
-        "hash": hashlib.sha256(f"{blockchain_name}-{owner_name}".encode()).hexdigest()
+        "previous_hash": previous_hash,
+        "hash": ""
     }
 
-    blockchain_data = {
-        "name": blockchain_name,
-        "blocks": [genesis_block],
-        "file": blockchain_file
-    }
+    # Создаем хеш нового блока
+    new_block_content = json.dumps(new_block, sort_keys=True).encode()
+    new_block["hash"] = hashlib.sha256(new_block_content).hexdigest()
 
+    # Добавляем новый блок в блокчейн
+    blockchain_data["blocks"].append(new_block)
+
+    # Получаем имя файла блокчейна для сохранения
+    blockchain_name = blockchain_data["name"]
+    blockchain_hash = hashlib.sha256(blockchain_name.encode()).hexdigest()
+    blockchain_file = f"{blockchain_hash}.json"
+    blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
+
+    console.print(f"[blue]Отладка:[/blue] Сохраняем блокчейн в файл: {blockchain_path}")
+
+    # Сохраняем блокчейн обратно в файл
     with open(blockchain_path, 'w') as f:
         json.dump(blockchain_data, f, indent=4)
 
-    print(f"Блокчейн '{blockchain_name}' успешно создан.")
-    return blockchain_data
+    return new_block
