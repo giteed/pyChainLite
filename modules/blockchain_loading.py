@@ -1,10 +1,17 @@
 # modules/blockchain_loading.py
+# Модуль для загрузки блокчейна
+
 import os
 import json
+import hashlib  # Необходимо импортировать hashlib для хеширования
 
 BLOCKCHAIN_DIR = "blockchains"
 
 def load_blockchain(blockchain_name):
+    """
+    Загружает блокчейн по его имени.
+    Возвращает данные блокчейна или None, если файл не найден.
+    """
     # Формируем имя файла на основе хеша блокчейна
     blockchain_hash = hashlib.sha256(blockchain_name.encode()).hexdigest()
     blockchain_file = f"{blockchain_hash}.json"
