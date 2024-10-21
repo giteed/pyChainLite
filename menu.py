@@ -68,12 +68,14 @@ def main():
         elif choice == '3':
             list_blockchains()
 
-        elif choice == '4':
-            if current_blockchain:
-                create_new_block(current_blockchain)
-            else:
-                console.print("[red]Ошибка: Блокчейн не загружен.[/red]")
-
+        if choice == '4':
+    if current_blockchain:
+        # Запрос данных для нового блока
+        block_data = input("Введите данные для нового блока: ").strip()
+        create_new_block(current_blockchain, block_data)
+        console.print("[green]Новый блок успешно добавлен в блокчейн.[/green]")
+    else:
+        console.print("[red]Ошибка: Блокчейн не загружен.[/red]")
         elif choice == '5':
             if current_blockchain:
                 view_blocks(current_blockchain)
