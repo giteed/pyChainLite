@@ -1,4 +1,4 @@
-# modules/blockchain_creation.py
+# modules/block_creation.py
 # Модуль для создания нового блокчейна и добавления нового блока в существующий блокчейн
 # Этот модуль содержит функции для создания нового блокчейна и добавления блоков в существующую цепочку.
 # Пример использования:
@@ -23,7 +23,7 @@ def create_blockchain(blockchain_name, owner_name):
     # Проверяем наличие директории для хранения блокчейнов
     if not os.path.exists(BLOCKCHAIN_DIR):
         os.makedirs(BLOCKCHAIN_DIR)
-        console.print(f"[blue]Отладка:[/blue] Папка для блокчейнов создана: {BLOCKCHAIN_DIR}")
+        console.print(f"[blue]Папка для блокчейнов создана: {BLOCKCHAIN_DIR}")
 
     # Генерируем хеш для имени блокчейна
     blockchain_hash = hashlib.sha256(blockchain_name.encode()).hexdigest()
@@ -69,7 +69,7 @@ def create_new_block(blockchain_data, data, user_id):
     """
     Создает новый блок и добавляет его в цепочку.
     """
-    # Отладка: получение предыдущего блока
+    # Отладка: получение последнего блока
     last_block = blockchain_data["blocks"][-1]
     console.print(f"[blue]Отладка:[/blue] Последний блок в цепочке: {last_block}")
 
@@ -97,13 +97,12 @@ def create_new_block(blockchain_data, data, user_id):
     blockchain_file = f"{blockchain_hash}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
 
-    # Отладка: проверка и создание директории блокчейнов
+    # Проверяем, существует ли директория для блокчейнов
     if not os.path.exists(BLOCKCHAIN_DIR):
         os.makedirs(BLOCKCHAIN_DIR)
-        console.print(f"[blue]Отладка:[/blue] Папка для блокчейнов создана: {BLOCKCHAIN_DIR}")
 
     # Отладка: путь к файлу блокчейна
-    console.print(f"[blue]Отладка:[/blue] Путь к файлу блокчейна: {blockchain_path}")
+    console.print(f"[blue]Отладка:[/blue] Путь к файлу блокчейна для записи: {blockchain_path}")
 
     # Сохраняем блокчейн в файл
     try:
