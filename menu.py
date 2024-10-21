@@ -1,30 +1,29 @@
 # menu.py
 # Главное меню для взаимодействия с pyChainLite
-# Этот скрипт отвечает за отображение главного меню, управление действиями пользователя и взаимодействие с различными модулями pyChainLite.
-# Пользователь может создавать новые блокчейны, загружать существующие, просматривать список блоков, запускать тесты и обновлять проект.
 
 import os
-import hashlib
+import sys
+from rich.console import Console
 from modules.blockchain_creation import create_blockchain
 from modules.blockchain_loading import load_blockchain
-from modules.blockchain_listing import list_blockchains
-from modules.block_creation import create_new_block
 from modules.block_viewer import view_blocks
+from modules.block_creation import create_new_block
+from modules.blockchain_listing import list_blockchains
 from modules.run_tests import run_tests
 from modules.update_project import update_project
 from modules.menu_help import display_help_menu
-from rich.console import Console
 
 console = Console()
 
 BLOCKCHAIN_DIR = "blockchains"
+current_blockchain = None
 
 def main():
-    current_blockchain = None
+    global current_blockchain
+
     while True:
-        console.print(f"\n[bold]Текущий блокчейн:[/bold] [cyan]{current_blockchain['name'] if current_blockchain else 'Блокчейн не загружен'}[/cyan]")
-        console.print(
-            """
+        console.print(f"\n[bold]Текущий блокчейн:[/bold] [cyan]{current_blockchain['name'] if current_blockchain else 'Блокчейн не загружен'}[/cyan]\n")
+        console.print("""
             Меню pyChainLite
             ┏━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
             ┃ ## ┃ 🚀 Выберите действие      ┃
@@ -43,9 +42,8 @@ def main():
             │    │                           │
             │ Q  │ 🚪 Выйти                  │
             └────┴───────────────────────────┘
-            """
-        )
-        
+        """)
+
         choice = input("Введите ваш выбор: ").strip().upper()
 
         if choice == '1':
@@ -56,7 +54,7 @@ def main():
                 owner_name = input("Введите имя владельца: ").strip()
                 current_blockchain = create_blockchain(blockchain_name, owner_name)
                 console.print(f"[green]Блокчейн '{blockchain_name}' успешно создан.[/green]")
-        
+
         elif choice == '2':
             blockchain_name = input("Введите имя блокчейна для загрузки: ").strip()
             current_blockchain = load_blockchain(blockchain_name)
@@ -68,14 +66,14 @@ def main():
         elif choice == '3':
             list_blockchains()
 
-        if choice == '4':
-    if current_blockchain:
-        # Запрос данных для нового блока
-        block_data = input("Введите данные для нового блока: ").strip()
-        create_new_block(current_blockchain, block_data)
-        console.print("[green]Новый блок успешно добавлен в блокчейн.[/green]")
-    else:
-        console.print("[red]Ошибка: Блокчейн не загружен.[/red]")
+        elif choice == '4':
+            if current_blockchain:
+                block_data = input("Введите данные для нового блока: ").strip()
+                create_new_block(current_blockchain, block_data)
+                console.print("[green]Новый блок успешно добавлен в блокчейн.[/green]")
+            else:
+                console.print("[red]Ошибка: Блокчейн не загружен.[/red]")
+
         elif choice == '5':
             if current_blockchain:
                 view_blocks(current_blockchain)
@@ -93,13 +91,13 @@ def main():
 
         elif choice == 'Q':
             console.print("Выход...")
-            break
+            sys.exit()
 
         else:
             console.print("[red]Неверный выбор. Попробуйте снова.[/red]")
 
+
 def blockchain_exists(blockchain_name):
-    """Проверяет, существует ли блокчейн с указанным именем."""
     blockchain_file = f"{os.path.join(BLOCKCHAIN_DIR, hashlib.sha256(blockchain_name.encode()).hexdigest())}.json"
     return os.path.exists(blockchain_file)
 
