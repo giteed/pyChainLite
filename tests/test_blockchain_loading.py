@@ -23,7 +23,11 @@ def test_load_blockchain(monkeypatch):
             "hash": hashlib.sha256("test_data".encode()).hexdigest()
         }]
     }
+
+    # Создание директории для блокчейнов
     os.makedirs(BLOCKCHAIN_DIR, exist_ok=True)
+
+    # Сохраняем блокчейн в файл
     with open(blockchain_path, 'w') as f:
         json.dump(blockchain_data, f, indent=4)
 
@@ -35,4 +39,5 @@ def test_load_blockchain(monkeypatch):
     blockchain = load_blockchain(blockchain_name)
 
     # Проверяем, что блокчейн успешно загружен
+    assert blockchain is not None, f"Ошибка: Блокчейн '{blockchain_name}' не был загружен."
     assert blockchain["blocks"][0]["data"]["blockchain_name"] == blockchain_name
