@@ -1,7 +1,7 @@
 # cli_scripts/push_data_in_block.py
 # Скрипт для добавления данных в блок блокчейна через аргументы командной строки
 # Пример использования:
-# python3 cli_scripts/push_data_in_block.py --blockchain-name alfa --uid edd "cli test add data to block"
+# python3 cli_scripts/push_data_in_block.py --blockchain-name alfa --uid edd "cli test add data to block" --verbose
 
 import argparse
 import os
@@ -23,13 +23,18 @@ from modules.block_creation import create_new_block
 
 console = Console()
 
-def push_data_to_block(blockchain_name, user_id, data):
+def debug_message(message, verbose):
+    """Выводит отладочные сообщения, если включен режим verbose"""
+    if verbose:
+        console.print(f"[blue]Отладка:[/blue] {message}")
+
+def push_data_to_block(blockchain_name, user_id, data, verbose=False):
     """
     Добавляет новый блок с данными в существующий блокчейн.
     """
-    console.print(f"[blue]Отладка:[/blue] Имя блокчейна: {blockchain_name}")
-    console.print(f"[blue]Отладка:[/blue] Идентификатор пользователя: {user_id}")
-    console.print(f"[blue]Отладка:[/blue] Данные: {data}")
+    debug_message(f"Имя блокчейна: {blockchain_name}", verbose)
+    debug_message(f"Идентификатор пользователя: {user_id}", verbose)
+    debug_message(f"Данные: {data}", verbose)
 
     if not data.strip():
         console.print("[red]Ошибка: Нельзя добавить блок с пустыми данными![/red]")
@@ -37,11 +42,11 @@ def push_data_to_block(blockchain_name, user_id, data):
 
     # Получаем хеш имени блокчейна на основе его имени
     blockchain_hash = hashlib.sha256(blockchain_name.encode()).hexdigest()
-    console.print(f"[blue]Отладка:[/blue] Хэш блокчейна: {blockchain_hash}")
+    debug_message(f"Хэш блокчейна: {blockchain_hash}", verbose)
 
     blockchain_file = f"{blockchain_hash}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
-    console.print(f"[blue]Отладка:[/blue] Абсолютный путь к файлу блокчейна: {blockchain_path}")
+    debug_message(f"Абсолютный путь к файлу блокчейна: {blockchain_path}", verbose)
 
     # Проверяем, существует ли блокчейн
     if not os.path.exists(blockchain_path):
@@ -49,14 +54,14 @@ def push_data_to_block(blockchain_name, user_id, data):
         return
 
     # Загружаем блокчейн
-    console.print("[blue]Отладка:[/blue] Загружаем блокчейн...")
+    debug_message("Загружаем блокчейн...", verbose)
     blockchain_data = load_blockchain(blockchain_name)
 
     if blockchain_data is None:
         console.print(f"[red]Ошибка: Не удалось загрузить данные блокчейна '{blockchain_name}'.[/red]")
         return
 
-    console.print(f"[blue]Отладка:[/blue] Блокчейн успешно загружен: {blockchain_data}")
+    debug_message(f"Блокчейн успешно загружен: {blockchain_data}", verbose)
 
     # Проверяем, есть ли у пользователя права на запись в блокчейн
     if user_id != blockchain_data["blocks"][0]["data"]["owner"]:
@@ -72,7 +77,7 @@ def push_data_to_block(blockchain_name, user_id, data):
     # Сохраняем обновленный блокчейн
     with open(blockchain_path, 'w') as f:
         json.dump(blockchain_data, f, indent=4)
-    
+
     # Выводим информацию о новом блоке
     console.print(f"[green]Новый блок ({new_block['index']}) с данными успешно добавлен в блокчейн '{blockchain_name}'.[/green]")
     console.print(f"[blue]Время добавления:[/blue] {readable_time}")
@@ -86,8 +91,9 @@ if __name__ == "__main__":
     parser.add_argument("--blockchain-name", required=True, help="Имя блокчейна")
     parser.add_argument("--uid", required=True, help="Идентификатор пользователя для авторизации")
     parser.add_argument("data", help="Данные для добавления в новый блок")
+    parser.add_argument("--verbose", action="store_true", help="Выводить отладочные сообщения")
 
     args = parser.parse_args()
 
     # Добавляем данные в блокчейн
-    push_data_to_block(args.blockchain_name, args.uid, args.data)
+    push_data_to_block(args.blockchain_name, args.uid, args.data, args.verbose)
