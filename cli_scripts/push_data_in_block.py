@@ -1,7 +1,5 @@
 # cli_scripts/push_data_in_block.py
 # Скрипт для добавления данных в блок блокчейна через аргументы командной строки
-# Пример использования:
-# python3 push_data_in_block.py --blockchain-name alfa --uid edd "cli test add data to block"
 
 import argparse
 import os
@@ -17,8 +15,9 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/..")
 from modules.blockchain_loading import load_blockchain
 from modules.block_creation import create_new_block
 
-# Устанавливаем абсолютный путь к папке с блокчейнами
-BLOCKCHAIN_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "blockchains")
+# Определяем абсолютный путь к папке blockchains
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BLOCKCHAIN_DIR = os.path.join(PROJECT_ROOT, "blockchains")
 
 console = Console()
 
@@ -30,7 +29,6 @@ def push_data_to_block(blockchain_name, user_id, data):
     console.print(f"[blue]Отладка:[/blue] Идентификатор пользователя: {user_id}")
     console.print(f"[blue]Отладка:[/blue] Данные: {data}")
 
-    # Проверка на наличие данных
     if not data.strip():
         console.print("[red]Ошибка: Нельзя добавить блок с пустыми данными![/red]")
         return
@@ -41,7 +39,7 @@ def push_data_to_block(blockchain_name, user_id, data):
 
     blockchain_file = f"{blockchain_hash}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
-    console.print(f"[blue]Отладка:[/blue] Абсолютный путь к файлу блокчейна: {os.path.abspath(blockchain_path)}")
+    console.print(f"[blue]Отладка:[/blue] Абсолютный путь к файлу блокчейна: {blockchain_path}")
 
     # Проверяем, существует ли блокчейн
     if not os.path.exists(blockchain_path):
