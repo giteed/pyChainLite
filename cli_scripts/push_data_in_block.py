@@ -11,13 +11,16 @@ import hashlib
 from datetime import datetime
 from rich.console import Console
 
+# Получаем абсолютный путь к корневой директории проекта
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 # Добавляем путь к модулям в системный путь
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/..")
+sys.path.append(os.path.join(ROOT_DIR))
 
 from modules.blockchain_loading import load_blockchain
 from modules.block_creation import create_new_block
 
-BLOCKCHAIN_DIR = "blockchains"  # Путь к папке с блокчейнами
+BLOCKCHAIN_DIR = os.path.join(ROOT_DIR, "blockchains")  # Абсолютный путь к папке с блокчейнами
 
 console = Console()
 
@@ -39,7 +42,7 @@ def push_data_to_block(blockchain_name, user_id, data):
 
     blockchain_file = f"{blockchain_hash}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
-    console.print(f"[blue]Отладка:[/blue] Путь к файлу блокчейна: {blockchain_path}")
+    console.print(f"[blue]Отладка:[/blue] Абсолютный путь к файлу блокчейна: {blockchain_path}")
 
     # Проверяем, существует ли блокчейн
     if not os.path.exists(blockchain_path):
