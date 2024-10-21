@@ -3,6 +3,7 @@
 
 import os
 import sys
+import hashlib 
 from rich.console import Console
 from modules.blockchain_creation import create_blockchain
 from modules.blockchain_loading import load_blockchain
