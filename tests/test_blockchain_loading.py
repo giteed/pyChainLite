@@ -1,8 +1,10 @@
 # tests/test_blockchain_loading.py
-import hashlib
 import os
+import hashlib
 import json
-from modules.blockchain_loading import load_blockchain, BLOCKCHAIN_DIR
+from modules.blockchain_loading import load_blockchain
+
+BLOCKCHAIN_DIR = "blockchains"
 
 def test_load_blockchain(monkeypatch):
     # Создаем тестовый блокчейн
@@ -24,20 +26,24 @@ def test_load_blockchain(monkeypatch):
         }]
     }
 
-    # Создание директории для блокчейнов
-    os.makedirs(BLOCKCHAIN_DIR, exist_ok=True)
+    try:
+        # Создание директории для блокчейнов
+        os.makedirs(BLOCKCHAIN_DIR, exist_ok=True)
 
-    # Сохраняем блокчейн в файл
-    with open(blockchain_path, 'w') as f:
-        json.dump(blockchain_data, f, indent=4)
+        # Сохраняем блокчейн в файл
+        with open(blockchain_path, 'w') as f:
+            json.dump(blockchain_data, f, indent=4)
 
-    # Mock user inputs
-    inputs = iter([blockchain_name])
-    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
+        # Mock user inputs
+        inputs = iter([blockchain_name])
+        monkeypatch.setattr('builtins.input', lambda _: next(inputs))
 
-    # Загружаем блокчейн (передаем аргумент blockchain_name)
-    blockchain = load_blockchain(blockchain_name)
+        # Загружаем блокчейн (передаем аргумент blockchain_name)
+        blockchain = load_blockchain(blockchain_name)
 
-    # Проверяем, что блокчейн успешно загружен
-    assert blockchain is not None, f"Ошибка: Блокчейн '{blockchain_name}' не был загружен."
-    assert blockchain["blocks"][0]["data"]["blockchain_name"] == blockchain_name
+        # Проверяем, что блокчейн успешно загружен
+        assert blockchain["blocks"][0]["data"]["blockchain_name"] == blockchain_name
+    finally:
+        # Удаляем созданный тестовый блокчейн
+        if os.path.exists(blockchain_path):
+            os.remove(blockchain_path)
