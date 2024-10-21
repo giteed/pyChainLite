@@ -29,6 +29,7 @@ def push_data_to_block(blockchain_name, user_id, data):
     console.print(f"[blue]Отладка:[/blue] Идентификатор пользователя: {user_id}")
     console.print(f"[blue]Отладка:[/blue] Данные: {data}")
 
+    # Проверка на наличие данных
     if not data.strip():
         console.print("[red]Ошибка: Нельзя добавить блок с пустыми данными![/red]")
         return
