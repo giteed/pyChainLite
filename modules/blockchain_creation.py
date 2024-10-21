@@ -1,4 +1,10 @@
 # modules/blockchain_creation.py
+# Модуль для создания нового блокчейна в pyChainLite
+# Этот модуль включает функции для создания блокчейна с генезис-блоком и проверки существования блокчейнов.
+# Функции:
+# - blockchain_exists(blockchain_name): проверяет, существует ли блокчейн с данным именем.
+# - create_blockchain(blockchain_name, owner_name): создает новый блокчейн с генезис-блоком.
+
 import hashlib
 import json
 import os
