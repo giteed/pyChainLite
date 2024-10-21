@@ -1,36 +1,50 @@
 # modules/blockchain_creation.py
-def main():
-    current_blockchain = None
+import hashlib
+import json
+import os
+from datetime import datetime
 
-    while True:
-        # Меню и вывод блокчейна, который сейчас используется
-        console.print(f"\n[bold]Текущий блокчейн:[/bold] [cyan]{current_blockchain['name'] if current_blockchain else 'Блокчейн не загружен'}[/cyan]")
-        display_menu()
+BLOCKCHAIN_DIR = "blockchains"
 
-        choice = input("Введите ваш выбор: ").strip().lower()
+def blockchain_exists(blockchain_name):
+    """
+    Проверяет, существует ли блокчейн с данным именем.
+    """
+    blockchain_file = f"{hashlib.sha256(blockchain_name.encode()).hexdigest()}.json"
+    blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
+    return os.path.exists(blockchain_path)
 
-        if choice == '1':
-            # Создать новый блокчейн
-            blockchain_name = input("Введите имя нового блокчейна: ").strip()
-            current_blockchain = create_blockchain(blockchain_name)  # Убираем owner_name, он больше не нужен
-        elif choice == '2':
-            # Загрузить блокчейн
-            blockchain_name = input("Введите имя блокчейна для загрузки: ").strip()
-            current_blockchain = load_blockchain(blockchain_name)
-        elif choice == '3':
-            # Список блокчейнов
-            list_blockchains()
-        elif choice == '4':
-            # Создать новый блок в текущем блокчейне
-            if current_blockchain:
-                create_new_block(current_blockchain)
-            else:
-                console.print("[red]Блокчейн не загружен. Сначала загрузите или создайте блокчейн.[/red]")
-        elif choice == 'q':
-            console.print("Выход...")
-            break
-        else:
-            console.print("[red]Неверный выбор, попробуйте снова.[/red]")
+def create_blockchain(blockchain_name, owner_name):
+    """
+    Создает новый блокчейн.
+    """
+    if blockchain_exists(blockchain_name):
+        return None
 
-if __name__ == "__main__":
-    main()
+    blockchain_file = f"{hashlib.sha256(blockchain_name.encode()).hexdigest()}.json"
+    blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
+
+    os.makedirs(BLOCKCHAIN_DIR, exist_ok=True)
+
+    genesis_block = {
+        "index": 0,
+        "timestamp": str(datetime.now()),
+        "data": {
+            "blockchain_name": blockchain_name,
+            "owner": owner_name
+        },
+        "previous_hash": "0" * 64,
+        "hash": hashlib.sha256(f"{blockchain_name}-{owner_name}".encode()).hexdigest()
+    }
+
+    blockchain_data = {
+        "name": blockchain_name,
+        "blocks": [genesis_block],
+        "file": blockchain_file
+    }
+
+    with open(blockchain_path, 'w') as f:
+        json.dump(blockchain_data, f, indent=4)
+
+    print(f"Блокчейн '{blockchain_name}' успешно создан.")
+    return blockchain_data
