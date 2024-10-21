@@ -10,7 +10,7 @@ from modules.blockchain_loading import load_blockchain
 from modules.blockchain_listing import list_blockchains
 from modules.block_creation import create_new_block
 from modules.block_viewer import view_blocks
-from modules.run_tests import run_all_tests
+from modules.run_tests import run_tests
 from modules.update_project import update_project
 from modules.menu_help import display_help_menu
 
@@ -88,7 +88,7 @@ def main():
                 console.print("[red]Ошибка: Сначала загрузите блокчейн.[/red]")
 
         elif choice == '6':
-            run_all_tests()
+            run_tests()
 
         elif choice == '7':
             update_project()
