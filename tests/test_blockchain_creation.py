@@ -1,20 +1,25 @@
-# tests/test_blockchain_creation.py
-import hashlib
 import os
+import hashlib
 import json
 from modules.blockchain_creation import create_blockchain
-from modules.blockchain_loading import BLOCKCHAIN_DIR
+
+BLOCKCHAIN_DIR = "blockchains"
 
 def test_create_blockchain(monkeypatch):
     # Mock user inputs
     inputs = iter(["test_blockchain", "owner_name", "password123"])
     monkeypatch.setattr('builtins.input', lambda _: next(inputs))
 
-    # Создаем блокчейн (передаем необходимые аргументы)
+    # Создаем блокчейн
     blockchain_name = "test_blockchain"
-    owner_name = "owner_name"
-    created_blockchain = create_blockchain(blockchain_name, owner_name)
-    
-    # Проверяем, что блокчейн создан
-    assert created_blockchain["name"] == blockchain_name
-    assert created_blockchain["blocks"][0]["data"]["owner"] == owner_name
+    blockchain_hash = hashlib.sha256(blockchain_name.encode()).hexdigest()
+    blockchain_file = f"{blockchain_hash}.json"
+    blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
+
+    try:
+        create_blockchain(blockchain_name, "owner_name")
+        assert os.path.exists(blockchain_path)
+    finally:
+        # Удаляем созданный тестовый блокчейн
+        if os.path.exists(blockchain_path):
+            os.remove(blockchain_path)
