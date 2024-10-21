@@ -3,13 +3,16 @@
 
 import os
 import json
-import hashlib  # Необходимо импортировать hashlib для хеширования
+import hashlib
+from rich.console import Console
 
-BLOCKCHAIN_DIR = "blockchains"
+console = Console()
+
+BLOCKCHAIN_DIR = "blockchains"  # Путь к папке с блокчейнами
 
 def load_blockchain(blockchain_name):
     """
-    Загружает блокчейн по его имени.
+    Загружает блокчейн из файла.
     Возвращает данные блокчейна или None, если файл не найден.
     """
     # Формируем имя файла на основе хеша блокчейна
@@ -17,13 +20,22 @@ def load_blockchain(blockchain_name):
     blockchain_file = f"{blockchain_hash}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
 
-    # Проверяем, существует ли файл блокчейна
+    console.print(f"[blue]Отладка:[/blue] Пытаемся загрузить блокчейн из файла: {blockchain_path}")
+
+    # Проверяем, существует ли файл
     if not os.path.exists(blockchain_path):
-        print(f"Ошибка: Блокчейн '{blockchain_name}' не найден.")
+        console.print(f"[red]Ошибка: Файл блокчейна не найден: {blockchain_path}[/red]")
         return None
 
-    # Загружаем блокчейн из файла
-    with open(blockchain_path, 'r') as f:
-        blockchain_data = json.load(f)
-
-    return blockchain_data
+    # Пытаемся загрузить файл блокчейна
+    try:
+        with open(blockchain_path, 'r') as f:
+            blockchain_data = json.load(f)
+            console.print(f"[blue]Отладка:[/blue] Данные блокчейна успешно загружены: {blockchain_data}")
+            return blockchain_data
+    except json.JSONDecodeError as e:
+        console.print(f"[red]Ошибка: Не удалось декодировать JSON из файла блокчейна: {e}[/red]")
+        return None
+    except Exception as e:
+        console.print(f"[red]Ошибка: Не удалось загрузить блокчейн: {e}[/red]")
+        return None
