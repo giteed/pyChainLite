@@ -25,26 +25,36 @@ def push_data_to_block(blockchain_name, user_id, data):
     """
     Добавляет новый блок с данными в существующий блокчейн.
     """
+    console.print(f"[blue]Отладка:[/blue] Имя блокчейна: {blockchain_name}")
+    console.print(f"[blue]Отладка:[/blue] Идентификатор пользователя: {user_id}")
+    console.print(f"[blue]Отладка:[/blue] Данные: {data}")
+
     if not data.strip():
         console.print("[red]Ошибка: Нельзя добавить блок с пустыми данными![/red]")
         return
 
     # Получаем хеш имени блокчейна на основе его имени
     blockchain_hash = hashlib.sha256(blockchain_name.encode()).hexdigest()
+    console.print(f"[blue]Отладка:[/blue] Хэш блокчейна: {blockchain_hash}")
+
     blockchain_file = f"{blockchain_hash}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
+    console.print(f"[blue]Отладка:[/blue] Путь к файлу блокчейна: {blockchain_path}")
 
     # Проверяем, существует ли блокчейн
     if not os.path.exists(blockchain_path):
-        console.print(f"[red]Ошибка: Блокчейн '{blockchain_name}' не найден.[/red]")
+        console.print(f"[red]Ошибка: Блокчейн '{blockchain_name}' не найден по пути: {blockchain_path}[/red]")
         return
 
     # Загружаем блокчейн
+    console.print("[blue]Отладка:[/blue] Загружаем блокчейн...")
     blockchain_data = load_blockchain(blockchain_name)
 
     if blockchain_data is None:
         console.print(f"[red]Ошибка: Не удалось загрузить данные блокчейна '{blockchain_name}'.[/red]")
         return
+
+    console.print(f"[blue]Отладка:[/blue] Блокчейн успешно загружен: {blockchain_data}")
 
     # Проверяем, есть ли у пользователя права на запись в блокчейн
     if user_id != blockchain_data["blocks"][0]["data"]["owner"]:
