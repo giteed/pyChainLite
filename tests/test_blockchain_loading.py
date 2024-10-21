@@ -1,10 +1,8 @@
 # tests/test_blockchain_loading.py
+import hashlib
 import os
 import json
-import hashlib
-from modules.blockchain_loading import load_blockchain
-
-BLOCKCHAIN_DIR = "blockchains"
+from modules.blockchain_loading import load_blockchain, BLOCKCHAIN_DIR
 
 def test_load_blockchain(monkeypatch):
     # Создаем тестовый блокчейн
@@ -32,10 +30,9 @@ def test_load_blockchain(monkeypatch):
     # Mock user inputs
     inputs = iter([blockchain_name])
     monkeypatch.setattr('builtins.input', lambda _: next(inputs))
-    
-    # Загружаем блокчейн
-    blockchain = load_blockchain()
-    assert blockchain["blocks"][0]["data"]["blockchain_name"] == blockchain_name
 
-    # Удаляем созданный файл после теста
-    os.remove(blockchain_path)
+    # Загружаем блокчейн (передаем аргумент blockchain_name)
+    blockchain = load_blockchain(blockchain_name)
+
+    # Проверяем, что блокчейн успешно загружен
+    assert blockchain["blocks"][0]["data"]["blockchain_name"] == blockchain_name
