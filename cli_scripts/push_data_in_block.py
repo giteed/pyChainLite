@@ -1,5 +1,7 @@
 # cli_scripts/push_data_in_block.py
-# Скрипт для добавления данных в блок блокчейна через аргументы командной строки с улучшенной справкой
+# Скрипт для добавления данных в блок блокчейна через аргументы командной строки
+# Пример использования:
+# python3 push_data_in_block.py --blockchain-name alfa --uid edd "cli test add data to block"
 
 import argparse
 import os
@@ -8,9 +10,6 @@ import sys
 import hashlib
 from datetime import datetime
 from rich.console import Console
-from rich.text import Text
-
-console = Console()
 
 # Добавляем путь к модулям в системный путь
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/..")
@@ -20,18 +19,14 @@ from modules.block_creation import create_new_block
 
 BLOCKCHAIN_DIR = "blockchains"  # Путь к папке с блокчейнами
 
+console = Console()
+
 def push_data_to_block(blockchain_name, user_id, data):
     """
-    Функция для добавления данных в блокчейн.
-    
-    :param blockchain_name: Имя блокчейна
-    :param user_id: Идентификатор пользователя (владелец блокчейна)
-    :param data: Данные для добавления в новый блок
+    Добавляет новый блок с данными в существующий блокчейн.
     """
-    
-    # Проверяем, введены ли данные
     if not data.strip():
-        console.print("[red]Ошибка: данные для добавления не могут быть пустыми.[/red]")
+        console.print("[red]Ошибка: Нельзя добавить блок с пустыми данными![/red]")
         return
 
     # Получаем хеш имени блокчейна на основе его имени
@@ -45,15 +40,18 @@ def push_data_to_block(blockchain_name, user_id, data):
         return
 
     # Загружаем блокчейн
-    with open(blockchain_path, 'r') as f:
-        blockchain_data = json.load(f)
+    blockchain_data = load_blockchain(blockchain_name)
+
+    if blockchain_data is None:
+        console.print(f"[red]Ошибка: Не удалось загрузить данные блокчейна '{blockchain_name}'.[/red]")
+        return
 
     # Проверяем, есть ли у пользователя права на запись в блокчейн
     if user_id != blockchain_data["blocks"][0]["data"]["owner"]:
         console.print(f"[red]Ошибка: Пользователь '{user_id}' не имеет прав на запись в этот блокчейн.[/red]")
         return
 
-    # Добавляем новый блок с переданными данными и идентификатором пользователя
+    # Добавляем новый блок с переданными данными
     new_block = create_new_block(blockchain_data, data, user_id=user_id)
 
     # Преобразуем timestamp в читаемый формат
@@ -62,48 +60,13 @@ def push_data_to_block(blockchain_name, user_id, data):
     # Сохраняем обновленный блокчейн
     with open(blockchain_path, 'w') as f:
         json.dump(blockchain_data, f, indent=4)
-
+    
     # Выводим информацию о новом блоке
     console.print(f"[green]Новый блок ({new_block['index']}) с данными успешно добавлен в блокчейн '{blockchain_name}'.[/green]")
-    console.print(f"Время добавления: [cyan]{readable_time}[/cyan]")
-    console.print(f"Хэш нового блока: [yellow]{new_block['hash']}[/yellow]")
-    console.print(f"Хэш предыдущего блока: [yellow]{new_block['previous_hash']}[/yellow]")
-    console.print(f"Добавлен пользователем: [bold]{new_block['data']['added_by']}[/bold]")
-
-def display_help():
-    """
-    Расширенная справка по работе с командной строкой для добавления данных в блокчейн.
-    """
-    console.print("\n[bold]Помощь по использованию скрипта push_data_in_block.py[/bold]", style="bold underline")
-    
-    console.print("\n[cyan]Описание:[/cyan]")
-    console.print("Этот скрипт позволяет добавлять данные в блокчейн, используя командную строку.")
-    
-    console.print("\n[cyan]Как использовать:[/cyan]")
-    console.print("Для запуска скрипта используйте следующую команду:")
-    console.print("[bold yellow]python3 push_data_in_block.py --blockchain-name <имя_блокчейна> --uid <имя_пользователя> <данные>[/bold yellow]\n")
-    
-    console.print("[cyan]Аргументы командной строки:[/cyan]")
-    table = Text()
-    table.append("[bold]--blockchain-name[/bold]:   ", style="bold yellow")
-    table.append("Имя существующего блокчейна, куда нужно добавить новый блок.\n")
-    table.append("[bold]--uid[/bold]:              ", style="bold yellow")
-    table.append("Имя пользователя (владельца блокчейна), который добавляет данные.\n")
-    table.append("[bold]<данные>[/bold]:           ", style="bold yellow")
-    table.append("Данные, которые нужно добавить в новый блок.\n")
-    console.print(table)
-    
-    console.print("\n[cyan]Пример использования:[/cyan]")
-    console.print("1. Добавление данных в блокчейн с именем 'myblockchain' от пользователя 'edd':\n")
-    console.print("[bold yellow]python3 push_data_in_block.py --blockchain-name myblockchain --uid edd 'Это данные для нового блока'[/bold yellow]\n")
-    
-    console.print("2. Если вы не хотите добавлять пустые данные, система сообщит об ошибке:")
-    console.print("[bold red]Ошибка: данные для добавления не могут быть пустыми.[/bold red]\n")
-
-    console.print("\n[bold]Примечание:[/bold] Все данные должны быть корректными и права пользователя должны быть проверены.\n")
-    
-    console.print("[cyan]Дополнительная информация:[/cyan]")
-    console.print("Перед добавлением убедитесь, что блокчейн уже существует и вы являетесь его владельцем.")
+    console.print(f"[blue]Время добавления:[/blue] {readable_time}")
+    console.print(f"[blue]Хэш нового блока:[/blue] {new_block['hash']}")
+    console.print(f"[blue]Хэш предыдущего блока:[/blue] {new_block['previous_hash']}")
+    console.print(f"[blue]Добавлен пользователем:[/blue] {new_block['data'].get('added_by')}")
 
 if __name__ == "__main__":
     # Парсинг аргументов командной строки
@@ -111,13 +74,8 @@ if __name__ == "__main__":
     parser.add_argument("--blockchain-name", required=True, help="Имя блокчейна")
     parser.add_argument("--uid", required=True, help="Идентификатор пользователя для авторизации")
     parser.add_argument("data", help="Данные для добавления в новый блок")
-    parser.add_argument("--help-cli", action="store_true", help="Показать помощь по работе с командной строкой")
 
     args = parser.parse_args()
 
-    # Проверка на вывод справки по CLI
-    if args.help_cli:
-        display_help()
-    else:
-        # Добавляем данные в блокчейн
-        push_data_to_block(args.blockchain_name, args.uid, args.data)
+    # Добавляем данные в блокчейн
+    push_data_to_block(args.blockchain_name, args.uid, args.data)
