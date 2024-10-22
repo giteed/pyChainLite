@@ -1,22 +1,30 @@
 #!/bin/bash
 # install-update-wrapper.sh
-# Скрипт для копирования install-update.sh и его запуска из родительской директории
+# Этот скрипт копирует install-update.sh в родительскую папку и запускает его оттуда.
 
-# Получаем путь к директории, где находится этот скрипт
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
+# Получаем текущий путь к директории проекта (там, где находится этот скрипт)
+PROJECT_DIR=$(dirname "$(realpath "$0")")
 
-# Проверяем, существует ли файл install-update.sh в папке проекта
-if [ -f "$SCRIPT_DIR/pyChainLite/install-update.sh" ]; then
-    # Копируем файл install-update.sh в родительскую директорию
-    cp "$SCRIPT_DIR/pyChainLite/install-update.sh" "$SCRIPT_DIR/.." || { echo "Ошибка: не удалось скопировать install-update.sh."; exit 1; }
-    
-    # Устанавливаем права на выполнение скрипта
-    chmod +x "$SCRIPT_DIR/../install-update.sh" || { echo "Ошибка: не удалось установить права на выполнение для install-update.sh."; exit 1; }
+# Определяем путь к install-update.sh
+INSTALL_SCRIPT="$PROJECT_DIR/install-update.sh"
 
-    # Переходим в родительскую директорию и запускаем install-update.sh
-    cd "$SCRIPT_DIR/.." || { echo "Ошибка: не удалось выйти в родительскую директорию."; exit 1; }
-    ./install-update.sh || { echo "Ошибка: не удалось запустить install-update.sh"; exit 1; }
-else
+# Проверяем, существует ли файл install-update.sh
+if [ ! -f "$INSTALL_SCRIPT" ]; then
     echo "Ошибка: Файл install-update.sh не найден в директории проекта."
     exit 1
 fi
+
+# Определяем путь к родительской директории
+PARENT_DIR=$(dirname "$PROJECT_DIR")
+
+# Копируем install-update.sh в родительскую папку
+cp "$INSTALL_SCRIPT" "$PARENT_DIR" || { echo "Ошибка при копировании install-update.sh в родительскую папку."; exit 1; }
+
+# Делаем скрипт исполняемым
+chmod +x "$PARENT_DIR/install-update.sh" || { echo "Ошибка при установке прав на выполнение для install-update.sh."; exit 1; }
+
+# Переходим в родительскую папку
+cd "$PARENT_DIR" || { echo "Ошибка: не удается перейти в родительскую папку."; exit 1; }
+
+# Запускаем install-update.sh из родительской папки
+./install-update.sh || { echo "Ошибка: не удалось запустить install-update.sh"; exit 1; }
