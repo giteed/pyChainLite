@@ -1,7 +1,4 @@
 # modules/blockchain_creation.py
-# Модуль для создания нового блокчейна и добавления нового блока в существующий блокчейн
-# Этот модуль содержит функции для создания нового блокчейна и добавления блоков в существующую цепочку.
-
 import hashlib
 import json
 import os
@@ -66,13 +63,12 @@ def create_blockchain(blockchain_name, owner_name):
     try:
         with open(blockchain_path, 'w') as f:
             json.dump(blockchain_data, f, indent=4)
-        console.print(f"[green]Блокчейн '{blockchain_name}' успешно создан.[/green]")
         debug(f"Блокчейн '{blockchain_name}' успешно сохранен в файл {blockchain_file}.")
     except Exception as e:
         console.print(f"[red]Ошибка при сохранении блокчейна: {e}[/red]")
         debug(f"Ошибка при сохранении блокчейна: {e}")
 
-    return blockchain_data
+    return blockchain_data  # Возвращаем данные блокчейна, без вывода успеха здесь
 
 
 def create_new_block(blockchain_data, data, user_id):
