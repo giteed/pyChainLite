@@ -1,5 +1,5 @@
 # modules/menu_help.py
-# Описание функционала меню pyChainLite
+## Описание функционала меню pyChainLite
 
 import os
 from rich.console import Console
