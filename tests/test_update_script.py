@@ -7,8 +7,11 @@ import subprocess
 import os
 
 def test_update_script():
-    # Указываем абсолютный путь к скрипту обновления в корневой папке проекта
-    script_path = os.path.abspath("../update-script.sh")  # Убедитесь, что путь корректен для вашего скрипта
+    # Указываем путь к скрипту обновления в корневой папке проекта (скорее всего это install-update.sh)
+    script_path = os.path.abspath("../install-update.sh")  # Измените на актуальное имя скрипта
+
+    # Проверяем, существует ли файл скрипта
+    assert os.path.exists(script_path), f"Скрипт {script_path} не найден"
 
     # Выполняем скрипт и перехватываем вывод
     result = subprocess.run([script_path], capture_output=True, text=True)
