@@ -11,8 +11,8 @@ REQUIRED_VERSION="3.12"
 
 # Проверяем, соответствует ли версия Python необходимой
 if [[ $(echo -e "$PYTHON_VERSION\n$REQUIRED_VERSION" | sort -V | head -n1) != "$REQUIRED_VERSION" ]]; then
-    echo "[ВНИМАНИЕ] Ваш текущий Python: $PYTHON_VERSION. Этот продукт был протестирован на Python $REQUIRED_VERSION."
-    echo "Рекомендуем установить или использовать версию Python $REQUIRED_VERSION для избежания возможных проблем."
+    echo -e "\033[33m[ВНИМАНИЕ]\033[0m Ваш текущий Python: $PYTHON_VERSION. Этот продукт был протестирован на Python $REQUIRED_VERSION."
+    echo -e "Рекомендуем установить или использовать версию Python $REQUIRED_VERSION для избежания возможных проблем."
 fi
 
 # Определяем путь для папки проекта pyChainLite
@@ -57,9 +57,9 @@ if [ -d "$PROJECT_DIR/.git" ]; then
     cd "$PROJECT_DIR" || { echo "Ошибка: не удается зайти в директорию проекта."; exit 1; }
     echo "Обновление существующего проекта..."
     if ! git pull origin main; then
-        echo "⚠ Ваши локальные изменения будут перезаписаны."
-        echo "⚠ Внимание: Выполнение 'git reset --hard HEAD' приведет к потере всех незакоммиченных изменений."
-        read -p "Продолжить сброс изменений? (y/n): " confirm
+        echo -e "\033[31m⚠\033[0m Ваши локальные изменения будут перезаписаны."
+        echo -e "\033[31m⚠\033[0m \033[1mВнимание: Выполнение 'git reset --hard HEAD' \033[31mприведет к потере всех незакоммиченных изменений!\033[0m"
+        read -p "Продолжить сброс изменений? (\033[31my\033[0m/n): " confirm
         if [ "$confirm" = "y" ]; then
             git reset --hard HEAD || { echo "Ошибка: не удалось сбросить изменения."; exit 1; }
             git pull origin main || { echo "Ошибка при повторном обновлении проекта. Проверьте наличие конфликтов."; exit 1; }
