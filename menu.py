@@ -1,5 +1,5 @@
 # menu.py
-# Главное меню для взаимодействия с pyChainLite
+## Главное меню для взаимодействия с pyChainLite
 
 import os
 import sys
