@@ -56,7 +56,7 @@ fi
 if [ -d "$PROJECT_DIR/.git" ]; then
     cd "$PROJECT_DIR" || { echo "Ошибка: не удается зайти в директорию проекта."; exit 1; }
     echo "Обновление существующего проекта..."
-    git pull origin main || {
+    if ! git pull origin main; then
         echo "⚠ Ваши локальные изменения будут перезаписаны."
         echo "⚠ Внимание: Выполнение 'git reset --hard HEAD' приведет к потере всех незакоммиченных изменений."
         read -p "Продолжить сброс изменений? (y/n): " confirm
@@ -67,7 +67,7 @@ if [ -d "$PROJECT_DIR/.git" ]; then
             echo "Обновление отменено."
             exit 1
         fi
-    }
+    fi
     echo "Проект успешно обновлен."
     init_logging
 else
