@@ -20,21 +20,21 @@ sys.path.append(ROOT_DIR)
 
 from modules.blockchain_loading import load_blockchain
 from modules.block_creation import create_new_block
+from modules.debug import debug, enable_debug  # Импортируем отладочные функции
 
 console = Console()
-
-def debug_message(message, verbose):
-    """Выводит отладочные сообщения, если включен режим verbose"""
-    if verbose:
-        console.print(f"[blue]Отладка:[/blue] {message}")
 
 def push_data_to_block(blockchain_name, user_id, data, verbose=False):
     """
     Добавляет новый блок с данными в существующий блокчейн.
     """
-    debug_message(f"Имя блокчейна: {blockchain_name}", verbose)
-    debug_message(f"Идентификатор пользователя: {user_id}", verbose)
-    debug_message(f"Данные: {data}", verbose)
+    # Включаем отладку, если флаг verbose активен
+    if verbose:
+        enable_debug()
+
+    debug(f"Имя блокчейна: {blockchain_name}")
+    debug(f"Идентификатор пользователя: {user_id}")
+    debug(f"Данные: {data}")
 
     if not data.strip():
         console.print("[red]Ошибка: Нельзя добавить блок с пустыми данными![/red]")
@@ -42,11 +42,11 @@ def push_data_to_block(blockchain_name, user_id, data, verbose=False):
 
     # Получаем хеш имени блокчейна на основе его имени
     blockchain_hash = hashlib.sha256(blockchain_name.encode()).hexdigest()
-    debug_message(f"Хэш блокчейна: {blockchain_hash}", verbose)
+    debug(f"Хэш блокчейна: {blockchain_hash}")
 
     blockchain_file = f"{blockchain_hash}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
-    debug_message(f"Абсолютный путь к файлу блокчейна: {blockchain_path}", verbose)
+    debug(f"Абсолютный путь к файлу блокчейна: {blockchain_path}")
 
     # Проверяем, существует ли блокчейн
     if not os.path.exists(blockchain_path):
@@ -54,14 +54,14 @@ def push_data_to_block(blockchain_name, user_id, data, verbose=False):
         return
 
     # Загружаем блокчейн
-    debug_message("Загружаем блокчейн...", verbose)
+    debug("Загружаем блокчейн...")
     blockchain_data = load_blockchain(blockchain_name)
 
     if blockchain_data is None:
         console.print(f"[red]Ошибка: Не удалось загрузить данные блокчейна '{blockchain_name}'.[/red]")
         return
 
-    debug_message(f"Блокчейн успешно загружен: {blockchain_data}", verbose)
+    debug(f"Блокчейн успешно загружен: {blockchain_data}")
 
     # Проверяем, есть ли у пользователя права на запись в блокчейн
     if user_id != blockchain_data["blocks"][0]["data"]["owner"]:
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     parser.add_argument("--blockchain-name", required=True, help="Имя блокчейна")
     parser.add_argument("--uid", required=True, help="Идентификатор пользователя для авторизации")
     parser.add_argument("data", help="Данные для добавления в новый блок")
-    parser.add_argument("--verbose", action="store_true", help="Выводить отладочные сообщения")
+    parser.add_argument("--verbose", action="store_true", help="Включить режим отладки (вывод отладочных сообщений)")
 
     args = parser.parse_args()
 
