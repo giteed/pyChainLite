@@ -1,10 +1,15 @@
 # tests/test_block_creation.py
-# Исправляем тест, чтобы передать user_id
+
+import os
+import json
+import hashlib  # Импортируем hashlib
+from modules.block_creation import create_new_block
+from modules.blockchain_loading import BLOCKCHAIN_DIR
 
 def test_create_new_block(monkeypatch):
     # Создаем тестовый блокчейн
     blockchain_name = "test_block_creation"
-    blockchain_file = f"{hashlib.sha256(blockchain_name.encode()).hexdigest()}.json"
+    blockchain_file = f"{hashlib.sha256(blockchain_name.encode()).hexdigest()}.json"  # Используем hashlib
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
 
     blockchain_data = {
@@ -15,9 +20,9 @@ def test_create_new_block(monkeypatch):
                 "owner": "owner_name"
             },
             "previous_hash": "0" * 64,
-            "hash": hashlib.sha256("test_data".encode()).hexdigest()
+            "hash": hashlib.sha256("test_data".encode()).hexdigest()  # Используем hashlib
         }],
-        "file": blockchain_file  # Добавляем ключ "file" в данные блокчейна
+        "file": blockchain_file
     }
 
     # Создание папки для блокчейнов, если её нет
