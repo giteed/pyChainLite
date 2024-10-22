@@ -85,6 +85,7 @@ cd "$PROJECT_DIR" || { log "Ошибка: не удалось зайти в ди
 log "Установка прав на выполнение для start.sh и update-and-start.sh..."
 chmod +x "$PROJECT_DIR/start.sh" || { log "Ошибка при установке прав на выполнение для start.sh."; exit 1; }
 chmod +x "$PROJECT_DIR/update-and-start.sh" || { log "Ошибка при установке прав на выполнение для update-and-start.sh."; exit 1; }
+chmod +x "$PROJECT_DIR/install-update-wrapper.sh" || { log "Ошибка при установке прав на выполнение для install-update-wrapper.sh."; exit 1; }
 
 # Создание виртуального окружения, если оно не создано
 if [ ! -d "$PROJECT_DIR/venv" ]; then
@@ -114,18 +115,18 @@ log "Установка или обновление завершены успе�
 if grep -q "alias upstart=" ~/.bashrc; then
     # Если алиас существует, проверяем путь
     current_alias=$(grep "alias upstart=" ~/.bashrc | cut -d"'" -f2)
-    expected_alias="bash $PROJECT_DIR/update-and-start.sh"
+    expected_alias="bash $PROJECT_DIR/install-update-wrapper.sh"
     if [[ "$current_alias" != "$expected_alias" ]]; then
         # Если путь отличается, заменяем алиас
         log "Исправление алиаса upstart в ~/.bashrc..."
-        sed -i "s|alias upstart=.*|alias upstart='bash $PROJECT_DIR/update-and-start.sh'|" ~/.bashrc
+        sed -i "s|alias upstart=.*|alias upstart='bash $PROJECT_DIR/install-update-wrapper.sh'|" ~/.bashrc
         log "Алиас upstart успешно обновлен."
     fi
 else
     # Если алиас не существует, добавляем его
     log "Добавляем алиас upstart в ~/.bashrc..."
     echo '# Алиас для быстрого запуска update-and-start.sh' >> ~/.bashrc
-    echo "alias upstart='bash $PROJECT_DIR/update-and-start.sh'" >> ~/.bashrc
+    echo "alias upstart='bash $PROJECT_DIR/install-update-wrapper.sh'" >> ~/.bashrc
     log "Алиас upstart успешно добавлен."
 fi
 
