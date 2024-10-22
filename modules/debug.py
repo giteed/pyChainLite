@@ -13,6 +13,18 @@ def set_debug_mode(state: bool):
     global DEBUG_MODE
     DEBUG_MODE = state
 
+def enable_debug():
+    """
+    Включает режим отладки.
+    """
+    set_debug_mode(True)
+
+def disable_debug():
+    """
+    Выключает режим отладки.
+    """
+    set_debug_mode(False)
+
 def debug(message: str):
     """
     Выводит отладочное сообщение, если отладка включена.
