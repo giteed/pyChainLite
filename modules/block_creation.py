@@ -10,6 +10,7 @@ import json
 import os
 from datetime import datetime
 from rich.console import Console
+from modules.debug import debug_message  # Импортируем функцию для управления отладкой
 
 console = Console()
 
@@ -18,12 +19,12 @@ BLOCKCHAIN_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__
 
 def create_blockchain(blockchain_name, owner_name):
     """
-    Создает новый блокчейн с указанным именем и владельцем.
+    Создает новый блокчей с указанным именем и владельцем.
     """
     # Проверяем наличие директории для хранения блокчейнов
     if not os.path.exists(BLOCKCHAIN_DIR):
         os.makedirs(BLOCKCHAIN_DIR)
-        console.print(f"[blue]Папка для блокчейнов создана: {BLOCKCHAIN_DIR}")
+        debug_message(f"Папка для блокчейнов создана: {BLOCKCHAIN_DIR}", verbose=True)  # Управляем отладочным сообщением
 
     # Генерируем хеш для имени блокчейна
     blockchain_hash = hashlib.sha256(blockchain_name.encode()).hexdigest()
@@ -71,7 +72,7 @@ def create_new_block(blockchain_data, data, user_id):
     """
     # Отладка: получение последнего блока
     last_block = blockchain_data["blocks"][-1]
-    console.print(f"[blue]Отладка:[/blue] Последний блок в цепочке: {last_block}")
+    debug_message(f"Последний блок в цепочке: {last_block}", verbose=True)  # Управляем отладочным сообщением
 
     # Новый блок
     new_block = {
@@ -102,7 +103,7 @@ def create_new_block(blockchain_data, data, user_id):
         os.makedirs(BLOCKCHAIN_DIR)
 
     # Отладка: путь к файлу блокчейна
-    console.print(f"[blue]Отладка:[/blue] Путь к файлу блокчейна для записи: {blockchain_path}")
+    debug_message(f"Путь к файлу блокчейна для записи: {blockchain_path}", verbose=True)  # Управляем отладочным сообщением
 
     # Сохраняем блокчейн в файл
     try:
