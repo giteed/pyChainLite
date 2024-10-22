@@ -1,103 +1,91 @@
 # install-update.ps1
-# Скрипт для установки и настройки pyChainLite на Windows
+# PowerShell скрипт для установки и настройки проекта pyChainLite на Windows
 
 # Проверка наличия Python
 function Check-Python {
-    $python = Get-Command python3 -ErrorAction SilentlyContinue
-    if (!$python) {
-        Write-Host "⚠ Python 3.12 не установлен."
-        $choice = Read-Host "Хотите установить Python 3.12 сейчас? (y/n)"
-        if ($choice -eq "y") {
-            Start-Process "https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe" -Wait
-            Write-Host "⚠ Завершите установку Python вручную, а затем перезапустите этот скрипт."
-            exit
-        } else {
-            Write-Host "⚠ Установите Python вручную, перейдя на https://www.python.org/downloads/, и перезапустите этот скрипт."
-            exit
-        }
+    Write-Host "Проверка наличия Python..."
+    if (!(Get-Command python -ErrorAction SilentlyContinue)) {
+        Write-Host "Python не найден. Необходимо установить Python 3.12.x или выше."
+        exit 1
     } else {
-        $version = python3 --version
-        Write-Host "✔ Найден $version"
+        $pythonVersion = & python --version
+        if ($pythonVersion -lt "3.12") {
+            Write-Host "Версия Python слишком старая: $pythonVersion. Установите Python 3.12.x или выше."
+            exit 1
+        }
+        Write-Host "Python найден: $pythonVersion"
     }
 }
 
 # Проверка наличия Git
 function Check-Git {
-    $git = Get-Command git -ErrorAction SilentlyContinue
-    if (!$git) {
-        Write-Host "⚠ Git не установлен."
-        $choice = Read-Host "Хотите установить Git сейчас? (y/n)"
-        if ($choice -eq "y") {
-            Start-Process "https://github.com/git-for-windows/git/releases/download/v2.42.0.windows.1/Git-2.42.0-64-bit.exe" -Wait
-            Write-Host "⚠ Завершите установку Git вручную, а затем перезапустите этот скрипт."
-            exit
-        } else {
-            Write-Host "⚠ Установите Git вручную, перейдя на https://git-scm.com/, и перезапустите этот скрипт."
-            exit
-        }
+    Write-Host "Проверка наличия Git..."
+    if (!(Get-Command git -ErrorAction SilentlyContinue)) {
+        Write-Host "Git не установлен. Необходимо установить Git."
+        exit 1
     } else {
-        $gitVersion = git --version
-        Write-Host "✔ Найден $gitVersion"
+        $gitVersion = & git --version
+        Write-Host "Git найден: $gitVersion"
     }
 }
 
-# Проверка виртуального окружения
+# Проверка и установка виртуального окружения
 function Check-Venv {
+    Write-Host "Проверка виртуального окружения..."
     if (!(Test-Path -Path "./venv")) {
-        Write-Host "⚠ Виртуальное окружение не найдено."
-        Write-Host "✔ Создаем виртуальное окружение..."
-        python3 -m venv venv
-    } else {
-        Write-Host "✔ Виртуальное окружение уже существует."
+        Write-Host "Создание виртуального окружения..."
+        python -m venv venv
     }
+    Write-Host "Виртуальное окружение готово."
 }
 
-# Активируем виртуальное окружение
+# Активация виртуального окружения
 function Activate-Venv {
-    Write-Host "✔ Активация виртуального окружения..."
+    Write-Host "Активация виртуального окружения..."
     .\venv\Scripts\Activate
 }
 
-# Проверка и установка зависимостей
-function Install-Requirements {
-    Write-Host "✔ Устанавливаем зависимости..."
-    pip install --upgrade pip
-    pip install -r requirements.txt
+# Установка зависимостей
+function Install-Dependencies {
+    Write-Host "Установка зависимостей..."
+    python -m pip install --upgrade pip
+    if (Test-Path -Path "./requirements.txt") {
+        python -m pip install -r requirements.txt
+    } else {
+        Write-Host "Файл requirements.txt не найден. Проверьте структуру проекта."
+        exit 1
+    }
+    Write-Host "Зависимости установлены."
 }
 
-# Клонирование проекта или обновление
-function Clone-Or-Update {
-    if (Test-Path -Path "./pyChainLite") {
-        Write-Host "✔ Обновляем существующий проект..."
-        cd pyChainLite
+# Клонирование или обновление проекта
+function Install-Project {
+    if (Test-Path -Path "./pyChainLite/.git") {
+        Write-Host "Обновление проекта..."
         git pull origin main
     } else {
-        Write-Host "✔ Клонируем проект pyChainLite..."
-        git clone https://github.com/giteed/pyChainLite.git
-        cd pyChainLite
+        Write-Host "Клонирование проекта из репозитория..."
+        git clone https://github.com/giteed/pyChainLite.git pyChainLite
     }
 }
 
-# Основная функция установки
-function Install-Project {
-    # Проверки Python и Git
-    Check-Python
-    Check-Git
-
-    # Клонирование/обновление проекта
-    Clone-Or-Update
-
-    # Проверка виртуального окружения и установка зависимостей
-    Check-Venv
-    Activate-Venv
-    Install-Requirements
-
-    # Установка завершена
-    Write-Host "`n✔ Установка завершена!"
-    Write-Host "Вы можете запустить проект с помощью:"
-    Write-Host "`n    .\venv\Scripts\Activate"
-    Write-Host "    python3 menu.py"
+# Запуск меню проекта
+function Run-Project {
+    Write-Host "Запуск проекта..."
+    Write-Host "Активируйте виртуальное окружение и выполните:"
+    Write-Host "    python pyChainLite\menu.py"
 }
 
-# Запуск установки
-Install-Project
+# Основная установка
+function Main {
+    Check-Python
+    Check-Git
+    Install-Project
+    Check-Venv
+    Activate-Venv
+    Install-Dependencies
+    Run-Project
+}
+
+# Выполнение основного процесса установки
+Main
