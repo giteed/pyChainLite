@@ -10,7 +10,7 @@ import json
 import os
 from datetime import datetime
 from rich.console import Console
-from modules.debug import debug_message  # Импортируем функцию для управления отладкой
+from modules.debug import debug  # Импортируем функцию для управления отладкой
 
 console = Console()
 
