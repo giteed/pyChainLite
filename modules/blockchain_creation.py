@@ -1,16 +1,13 @@
 # modules/blockchain_creation.py
 # Модуль для создания нового блокчейна и добавления нового блока в существующий блокчейн
 # Этот модуль содержит функции для создания нового блокчейна и добавления блоков в существующую цепочку.
-# Пример использования:
-# create_blockchain("my_chain", "owner_name") - создаст новый блокчейн.
-# create_new_block(blockchain_data, data, user_id="user_id") - добавит новый блок в цепочку.
 
 import hashlib
 import json
 import os
 from datetime import datetime
 from rich.console import Console
-from modules.debug import debug  # Импортируем корректную функцию debug
+from modules.debug import debug  # Импортируем функцию для отладки
 
 console = Console()
 
@@ -21,6 +18,8 @@ def create_blockchain(blockchain_name, owner_name):
     """
     Создает новый блокчейн с указанным именем и владельцем.
     """
+    debug(f"Попытка создать блокчейн с именем: {blockchain_name}, владелец: {owner_name}")
+    
     # Проверяем наличие директории для хранения блокчейнов
     if not os.path.exists(BLOCKCHAIN_DIR):
         os.makedirs(BLOCKCHAIN_DIR)
@@ -30,10 +29,12 @@ def create_blockchain(blockchain_name, owner_name):
     blockchain_hash = hashlib.sha256(blockchain_name.encode()).hexdigest()
     blockchain_file = f"{blockchain_hash}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
+    debug(f"Путь к файлу блокчейна: {blockchain_path}")
 
     # Проверяем, существует ли уже блокчейн с таким именем
     if os.path.exists(blockchain_path):
         console.print(f"[red]Ошибка: Блокчейн с именем '{blockchain_name}' уже существует.[/red]")
+        debug(f"Ошибка: блокчейн с именем '{blockchain_name}' уже существует.")
         return None
 
     # Генезис блок (первый блок)
@@ -47,22 +48,30 @@ def create_blockchain(blockchain_name, owner_name):
         "previous_hash": "0" * 64,
         "hash": ""
     }
+    debug(f"Генезис блок создан: {genesis_block}")
 
     # Вычисляем хеш генезис-блока
     genesis_block_content = json.dumps(genesis_block, sort_keys=True).encode()
     genesis_block["hash"] = hashlib.sha256(genesis_block_content).hexdigest()
+    debug(f"Хеш генезис блока: {genesis_block['hash']}")
 
     # Создаем структуру блокчейна
     blockchain_data = {
         "name": blockchain_name,
         "blocks": [genesis_block]
     }
+    debug(f"Блокчейн данные: {blockchain_data}")
 
     # Сохраняем блокчейн в файл
-    with open(blockchain_path, 'w') as f:
-        json.dump(blockchain_data, f, indent=4)
+    try:
+        with open(blockchain_path, 'w') as f:
+            json.dump(blockchain_data, f, indent=4)
+        console.print(f"[green]Блокчейн '{blockchain_name}' успешно создан.[/green]")
+        debug(f"Блокчейн '{blockchain_name}' успешно сохранен в файл {blockchain_file}.")
+    except Exception as e:
+        console.print(f"[red]Ошибка при сохранении блокчейна: {e}[/red]")
+        debug(f"Ошибка при сохранении блокчейна: {e}")
 
-    console.print(f"[green]Блокчейн '{blockchain_name}' успешно создан.[/green]")
     return blockchain_data
 
 
@@ -85,10 +94,12 @@ def create_new_block(blockchain_data, data, user_id):
         },
         "previous_hash": last_block["hash"]
     }
+    debug(f"Создан новый блок: {new_block}")
 
     # Вычисляем хеш нового блока
     block_content = json.dumps(new_block, sort_keys=True).encode()
     new_block["hash"] = hashlib.sha256(block_content).hexdigest()
+    debug(f"Хеш нового блока: {new_block['hash']}")
 
     # Добавляем новый блок в блокчейн
     blockchain_data["blocks"].append(new_block)
@@ -97,21 +108,21 @@ def create_new_block(blockchain_data, data, user_id):
     blockchain_hash = hashlib.sha256(blockchain_data["name"].encode()).hexdigest()
     blockchain_file = f"{blockchain_hash}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
+    debug(f"Путь к файлу блокчейна: {blockchain_path}")
 
-    # Отладка: проверка и создание директории блокчейнов
+    # Проверяем, существует ли директория для блокчейнов
     if not os.path.exists(BLOCKCHAIN_DIR):
         os.makedirs(BLOCKCHAIN_DIR)
         debug(f"Папка для блокчейнов создана: {BLOCKCHAIN_DIR}")
-
-    # Отладка: путь к файлу блокчейна
-    debug(f"Путь к файлу блокчейна: {blockchain_path}")
 
     # Сохраняем блокчейн в файл
     try:
         with open(blockchain_path, 'w') as f:
             json.dump(blockchain_data, f, indent=4)
         console.print(f"[green]Новый блок успешно добавлен в блокчейн '{blockchain_data['name']}'[/green]")
+        debug(f"Новый блок успешно добавлен в файл {blockchain_file}.")
     except Exception as e:
         console.print(f"[red]Ошибка при сохранении блока: {e}[/red]")
+        debug(f"Ошибка при сохранении блока: {e}")
 
     return new_block
