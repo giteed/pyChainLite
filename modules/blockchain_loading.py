@@ -5,6 +5,7 @@ import os
 import json
 import hashlib
 from rich.console import Console
+from modules.debug import debug  # Импортируем функцию для отладочных сообщений
 
 console = Console()
 
@@ -22,7 +23,7 @@ def load_blockchain(blockchain_name):
     blockchain_file = f"{blockchain_hash}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
 
-    console.print(f"[blue]Отладка:[/blue] Пытаемся загрузить блокчейн из файла: {blockchain_path}")
+    debug(f"Пытаемся загрузить блокчейн из файла: {blockchain_path}")
 
     # Проверяем, существует ли файл
     if not os.path.exists(blockchain_path):
@@ -33,7 +34,7 @@ def load_blockchain(blockchain_name):
     try:
         with open(blockchain_path, 'r') as f:
             blockchain_data = json.load(f)
-            console.print(f"[blue]Отладка:[/blue] Данные блокчейна успешно загружены: {blockchain_data}")
+            debug(f"Данные блокчейна успешно загружены: {blockchain_data}")
             return blockchain_data
     except json.JSONDecodeError as e:
         console.print(f"[red]Ошибка: Не удалось декодировать JSON из файла блокчейна: {e}[/red]")
