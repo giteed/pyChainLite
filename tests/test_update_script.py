@@ -7,8 +7,8 @@ import subprocess
 import os
 
 def test_update_script():
-    # Указываем путь к скрипту обновления в корневой папке проекта (скорее всего это install-update.sh)
-    script_path = os.path.abspath("../install-update.sh")  # Измените на актуальное имя скрипта
+    # Указываем путь к скрипту обновления в корневой папке проекта
+    script_path = os.path.abspath("../install-update.sh")  # Измените на актуальное имя скрипта, если необходимо
 
     # Проверяем, существует ли файл скрипта
     assert os.path.exists(script_path), f"Скрипт {script_path} не найден"
@@ -20,7 +20,8 @@ def test_update_script():
     assert result.returncode == 0, f"Скрипт завершился с ошибкой: {result.stderr}"
 
     # Проверяем, что в выводе присутствуют важные части
-    assert "Принудительное обновление проекта..." in result.stdout, "Ожидаемый текст не найден"
+    assert "Обновление существующего проекта..." in result.stdout, "Ожидаемый текст об обновлении не найден"
+    assert "Проект успешно обновлен." in result.stdout, "Сообщение об успешном обновлении не найдено"
     assert "Для быстрого запуска проекта можно использовать команду 'upstart'" in result.stdout, "Ожидаемое сообщение об алиасе отсутствует"
 
     # Выводим результат теста
