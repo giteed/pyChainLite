@@ -13,6 +13,7 @@ def test_create_new_block(monkeypatch):
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
 
     blockchain_data = {
+        "name": blockchain_name,  # Добавляем ключ 'name'
         "blocks": [{
             "index": 0,
             "data": {
