@@ -2,7 +2,7 @@
 # Модуль для создания нового блокчейна и добавления нового блока в существующий блокчейн
 # Этот модуль содержит функции для создания нового блокчейна и добавления блоков в существующую цепочку.
 # Пример использования:
-# create_blockchain("my_chain", "owner_name") - создаст новый блокчейн.
+# create_blockchain("my_chain", "owner_name") - создаст новый блокчей.
 # create_new_block(blockchain_data, data, user_id="user_id") - добавит новый блок в цепочку.
 
 import hashlib
@@ -10,6 +10,7 @@ import json
 import os
 from datetime import datetime
 from rich.console import Console
+from modules.debug import debug_message  # Импортируем функцию для управления отладкой
 
 console = Console()
 
@@ -23,7 +24,7 @@ def create_blockchain(blockchain_name, owner_name):
     # Проверяем наличие директории для хранения блокчейнов
     if not os.path.exists(BLOCKCHAIN_DIR):
         os.makedirs(BLOCKCHAIN_DIR)
-        console.print(f"[blue]Отладка:[/blue] Папка для блокчейнов создана: {BLOCKCHAIN_DIR}")
+        debug_message(f"Папка для блокчейнов создана: {BLOCKCHAIN_DIR}")
 
     # Генерируем хеш для имени блокчейна
     blockchain_hash = hashlib.sha256(blockchain_name.encode()).hexdigest()
@@ -71,7 +72,7 @@ def create_new_block(blockchain_data, data, user_id):
     """
     # Отладка: получение предыдущего блока
     last_block = blockchain_data["blocks"][-1]
-    console.print(f"[blue]Отладка:[/blue] Последний блок в цепочке: {last_block}")
+    debug_message(f"Последний блок в цепочке: {last_block}")
 
     # Новый блок
     new_block = {
@@ -100,10 +101,10 @@ def create_new_block(blockchain_data, data, user_id):
     # Отладка: проверка и создание директории блокчейнов
     if not os.path.exists(BLOCKCHAIN_DIR):
         os.makedirs(BLOCKCHAIN_DIR)
-        console.print(f"[blue]Отладка:[/blue] Папка для блокчейнов создана: {BLOCKCHAIN_DIR}")
+        debug_message(f"Папка для блокчейнов создана: {BLOCKCHAIN_DIR}")
 
     # Отладка: путь к файлу блокчейна
-    console.print(f"[blue]Отладка:[/blue] Путь к файлу блокчейна: {blockchain_path}")
+    debug_message(f"Путь к файлу блокчейна: {blockchain_path}")
 
     # Сохраняем блокчейн в файл
     try:
