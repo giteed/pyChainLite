@@ -74,7 +74,7 @@ def main():
         elif choice == '4':
             if current_blockchain:
                 block_data = input("Введите данные для нового блока: ").strip()
-                create_new_block(current_blockchain, block_data, "user_id", debug_mode)  # Передаем debug_mode
+                create_new_block(current_blockchain, block_data, "user_id")
                 console.print("[green]Новый блок успешно добавлен в блокчейн.[/green]")
             else:
                 console.print("[red]Ошибка: Блокчейн не загружен.[/red]")
