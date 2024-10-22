@@ -1,19 +1,12 @@
-import os
-import json
-import hashlib
-import pytest
-from modules.block_creation import create_new_block
+# tests/test_block_creation.py
+# Исправляем тест, чтобы передать user_id
 
-# Директория для блокчейнов
-BLOCKCHAIN_DIR = "blockchains"
-
-# 🧪 Запуск тестов...
 def test_create_new_block(monkeypatch):
     # Создаем тестовый блокчейн
     blockchain_name = "test_block_creation"
     blockchain_file = f"{hashlib.sha256(blockchain_name.encode()).hexdigest()}.json"
     blockchain_path = os.path.join(BLOCKCHAIN_DIR, blockchain_file)
-    
+
     blockchain_data = {
         "blocks": [{
             "index": 0,
@@ -26,27 +19,24 @@ def test_create_new_block(monkeypatch):
         }],
         "file": blockchain_file  # Добавляем ключ "file" в данные блокчейна
     }
-    
+
     # Создание папки для блокчейнов, если её нет
     os.makedirs(BLOCKCHAIN_DIR, exist_ok=True)
-    
+
     # Сохраняем тестовый блокчейн в файл
     with open(blockchain_path, 'w') as f:
         json.dump(blockchain_data, f, indent=4)
-    
+
     # 🧪 Mock user inputs
     inputs = iter(["new block data"])
     monkeypatch.setattr('builtins.input', lambda _: next(inputs))
-    
+
     # Загружаем блокчейн и создаем новый блок
     new_block_data = "new block data"
-    create_new_block(blockchain_data, new_block_data)
-    
-    # Проверка, что блок добавлен в блокчейн
-    assert len(blockchain_data["blocks"]) == 2
-    # Проверяем правильность данных
-    assert blockchain_data["blocks"][-1]["data"]['data'] == new_block_data
+    user_id = "test_user"  # Добавляем user_id
+    create_new_block(blockchain_data, new_block_data, user_id=user_id)  # Передаем user_id
 
-    # 🧪 Тест завершен, удаляем тестовый блокчейн
-    if os.path.exists(blockchain_path):
-        os.remove(blockchain_path)
+    # Проверяем, что новый блок был добавлен
+    assert len(blockchain_data["blocks"]) == 2  # Новый блок добавлен
+    assert blockchain_data["blocks"][-1]["data"]["data"] == new_block_data  # Данные совпадают
+    assert blockchain_data["blocks"][-1]["data"]["added_by"] == user_id  # Проверка добавленного user_id
